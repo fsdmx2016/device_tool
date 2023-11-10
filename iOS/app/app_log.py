@@ -3,16 +3,41 @@
 
 """
 @Author  :  SunPeng
-@Date    :  2023/11/10 13:31
+@Date    :  2023/11/10 18:25
 @Desc    :
 """
+import subprocess
+import sys
+from typing import Optional
+
 from iOS.app import common
 
 
 class App_Log(object):
-    def get_crash_log_list(self):
-        rsp = common.raw_shell("tidevice crashreport --list" )
+    content = None
+    def realtime_syslog(self, log_find: Optional[str] = None):
+        if log_find:
+            command = 'tidevice syslog |grep ' + log_find
+        else:
+            command = 'tidevice syslog'
+        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+        while True:
+            global content
+            output = process.stdout.readline().decode().strip()
+            if output == '' and process.poll() is not None:
+                break
+            if output:
+                print(output)
+            file = open("文件路径/文件名.txt", "w")  # "w"表示以写入模式打开文件
+            file.write(output)
 
 
-    def export_crash_log_list(self,file_path):
-        rsp = common.raw_shell("tidevice crashreport --keep "+file_path )
+    def export_syslog(self, file_path):
+        global content
+
+
+
+if __name__ == '__main__':
+    app_ = App_Log()
+    app_.realtime_syslog("mtxx")
