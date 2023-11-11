@@ -14,22 +14,29 @@ class StartMethod:
         self.dev = dev
 
     # 获取当前的top activity
-    def get_current_activity(self):
+    def get_top_activity(self):
         out = self.dev.get_top_activity()
-        return out
+        return str(out).split(",")[1].split("'")[1]
 
     # 获取启动的activity
-    def get_start_activity(self, package_name):
+    def get_start_activity(self,):
         return self.dev.shell("")
-
+    def set_value(self):
+        pass
     # 打印所有的APP列表
     def get_list_app(self):
         return self.dev.list_app()
 
     # 获取启动时间
-    def get_start_time(self, package_name: str, num: int):
+    def get_start_time(self, package_name:str,start_activity: str, num: int):
+        print(package_name)
+        print(start_activity)
+        print(num)
         time_list = []
         for i in range(num):
-            start_activity = self.get_start_activity(package_name)
+            # start_activity = self.get_start_activity(package_name)
             time_list.append(self.dev.start_app_timing(package=package_name, activity=start_activity))
-        return time_list
+        time_=""
+        for index,i in enumerate(time_list):
+            time_+="第"+str(index+1)+"次的启动时间为"+str(i)+"ms"+"\n"
+        return time_

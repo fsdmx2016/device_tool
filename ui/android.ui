@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1086</width>
+    <width>1152</width>
     <height>874</height>
    </rect>
   </property>
@@ -16,32 +16,132 @@
   <widget class="QTabWidget" name="tabWidget1">
    <property name="geometry">
     <rect>
-     <x>80</x>
+     <x>90</x>
      <y>130</y>
      <width>901</width>
      <height>641</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
+   <widget class="QWidget" name="tab_4">
+    <attribute name="title">
+     <string>录屏分帧</string>
+    </attribute>
+    <widget class="QPushButton" name="lp_start">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>40</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>录制视频</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lp_max_time">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>39</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>50</y>
+       <width>91</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>录制最大时长</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>90</y>
+       <width>101</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>分帧视频目录</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lp_video_file_path">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>90</y>
+       <width>331</width>
+       <height>20</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="lp_choice_video">
+     <property name="geometry">
+      <rect>
+       <x>520</x>
+       <y>80</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>手动选择</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>170</y>
+       <width>101</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>分帧图片</string>
+     </property>
+    </widget>
+    <widget class="QScrollArea" name="lp_pictures">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>200</y>
+       <width>771</width>
+       <height>401</height>
+      </rect>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>769</width>
+        <height>399</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+   </widget>
    <widget class="QWidget" name="tab">
     <attribute name="title">
      <string>FPS测试</string>
     </attribute>
-    <widget class="QPushButton" name="pushButton">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>50</y>
-       <width>231</width>
-       <height>131</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>PushButton</string>
-     </property>
-    </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
@@ -52,7 +152,7 @@
       <rect>
        <x>30</x>
        <y>40</y>
-       <width>111</width>
+       <width>151</width>
        <height>21</height>
       </rect>
      </property>
@@ -60,21 +160,21 @@
       <string>输入启动activity</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="page2_get_input_activity">
+    <widget class="QLineEdit" name="start_input_activity">
      <property name="geometry">
       <rect>
-       <x>140</x>
-       <y>40</y>
-       <width>113</width>
-       <height>21</height>
+       <x>190</x>
+       <y>30</y>
+       <width>311</width>
+       <height>31</height>
       </rect>
      </property>
     </widget>
-    <widget class="QPushButton" name="page2_get_current_activity">
+    <widget class="QPushButton" name="start_get_current_activity">
      <property name="geometry">
       <rect>
-       <x>270</x>
-       <y>31</y>
+       <x>520</x>
+       <y>30</y>
        <width>131</width>
        <height>31</height>
       </rect>
@@ -83,11 +183,11 @@
       <string>获取当前activity</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="page2_get_start_activity">
+    <widget class="QPushButton" name="start_get_start_activity">
      <property name="geometry">
       <rect>
-       <x>410</x>
-       <y>31</y>
+       <x>670</x>
+       <y>30</y>
        <width>141</width>
        <height>31</height>
       </rect>
@@ -135,20 +235,20 @@
       <string>测试次数</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="page2_test_num">
+    <widget class="QLineEdit" name="start_test_num">
      <property name="geometry">
       <rect>
-       <x>330</x>
+       <x>340</x>
        <y>90</y>
-       <width>81</width>
+       <width>111</width>
        <height>21</height>
       </rect>
      </property>
     </widget>
-    <widget class="QPushButton" name="page2_start_test">
+    <widget class="QPushButton" name="start_time_test">
      <property name="geometry">
       <rect>
-       <x>430</x>
+       <x>490</x>
        <y>80</y>
        <width>121</width>
        <height>41</height>
@@ -181,7 +281,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>这里显示启动时间</string>
+      <string/>
      </property>
     </widget>
    </widget>
@@ -190,40 +290,70 @@
      <string>关于</string>
     </attribute>
     <layout class="QFormLayout" name="formLayout">
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>仿写xx测试工具</string>
-       </property>
-       <property name="textFormat">
-        <enum>Qt::RichText</enum>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_2"/>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>                                                仿写xx测试工具</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::PlainText</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
   </widget>
-  <widget class="QWidget" name="formLayoutWidget">
+  <widget class="QLabel" name="label_5">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>30</y>
-     <width>891</width>
-     <height>80</height>
+     <x>370</x>
+     <y>40</y>
+     <width>91</width>
+     <height>16</height>
     </rect>
    </property>
-   <layout class="QFormLayout" name="formLayout_2">
-    <item row="0" column="0">
-     <widget class="QPushButton" name="pushButton_2">
-      <property name="text">
-       <string>PushButton</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
+   <property name="text">
+    <string>应用进程</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="device_id">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>40</y>
+     <width>131</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>40</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>设备ID</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="device_app_list">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>30</y>
+     <width>341</width>
+     <height>31</height>
+    </rect>
+   </property>
   </widget>
  </widget>
  <resources/>
