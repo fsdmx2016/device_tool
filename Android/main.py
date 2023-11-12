@@ -30,8 +30,6 @@ class MyApp(QtWidgets.QDialog):
     def init_ui_lp(self):
         # 录制视频按钮点击事件
         app_ = video_cut.Video_Cut()
-
-        # self.lp_choice_video.clicked.connect(lambda:app_.select_file(self.lp_video_file_path))
         self.lp_choice_video.clicked.connect(self.onFileChoose)
         self.lp_start_clive_video.clicked.connect(
             lambda: app_.start_covert_video(self.lp_video_file_path.text(), self.lp_pictures))
