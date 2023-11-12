@@ -6,8 +6,7 @@
 @Date    :  2023/11/10 13:08
 @Desc    :
 """
-import tidevice
-import common
+from Base import common
 
 
 class App_Manager(object):

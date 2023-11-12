@@ -6,7 +6,7 @@
 @Date    :  2023/11/10 18:41
 @Desc    :
 """
-from iOS.app import common
+from Base import common
 
 
 class Base_Device(object):

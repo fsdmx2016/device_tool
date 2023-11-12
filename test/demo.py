@@ -1,39 +1,55 @@
-import cv2
+# 录屏相关
+# https://blog.csdn.net/AirtestProject/article/details/129812923
 
-def extract_frames(video_path, output_folder, frame_rate):
-    # 打开视频文件
-    video = cv2.VideoCapture(video_path)
-    # 获取视频的帧率
-    fps = video.get(cv2.CAP_PROP_FPS)
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+import random
 
-    # 计算每隔多少帧取一帧图像
-    frame_interval = round(fps / frame_rate)
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
 
-    # 初始化帧计数器
-    frame_count = 0
+        # 创建一个Matplotlib图形对象
+        self.figure = Figure()
 
-    while True:
-        # 读取当前帧
-        ret, frame = video.read()
+        # 创建一个绘图区域对象
+        self.canvas = FigureCanvas(self.figure)
 
-        # 如果无法读取帧，说明视频已经结束
-        if not ret:
-            break
+        # 创建一个垂直布局
+        layout = QVBoxLayout()
+        layout.addWidget(self.canvas)
 
-        # 如果当前帧是需要保留的帧，则保存为图像文件
-        if frame_count % frame_interval == 0:
-            output_path = f"{output_folder}/frame_{frame_count}.jpg"
-            cv2.imwrite(output_path, frame)
+        # 创建一个主窗口小部件，并将布局设置为垂直布局
+        widget = QWidget()
+        widget.setLayout(layout)
+        self.setCentralWidget(widget)
 
-        # 增加帧计数器
-        frame_count += 1
+        # 启动定时器以更新图形
+        self.timer = self.canvas.new_timer(interval=1000)  # 每秒更新一次
+        self.timer.add_callback(self.update_plot)
+        self.timer.start()
 
-    # 释放视频对象
-    video.release()
+    def update_plot(self):
+        # 清除图形
+        self.figure.clear()
 
-# 示例用法
-video_path = "D:\WorkDemo\device_tool\deo.mp4"
-output_folder = "D:\WorkDemo\device_tool\ss"
-frame_rate = 1
+        # 创建一个绘图子区域对象
+        ax = self.figure.add_subplot(111)
 
-extract_frames(video_path, output_folder, frame_rate)
+        # 模拟数据更新
+        x = range(10)
+        y = [random.randint(0, 10) for _ in range(10)]
+
+        # 绘制折线图
+        ax.plot(x, y)
+
+        # 刷新图形
+        self.canvas.draw()
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())

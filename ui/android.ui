@@ -16,14 +16,14 @@
   <widget class="QTabWidget" name="tabWidget1">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>80</x>
      <y>130</y>
      <width>901</width>
      <height>641</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab_4">
     <attribute name="title">
@@ -81,7 +81,7 @@
     <widget class="QLineEdit" name="lp_video_file_path">
      <property name="geometry">
       <rect>
-       <x>170</x>
+       <x>160</x>
        <y>90</y>
        <width>331</width>
        <height>20</height>
@@ -137,11 +137,48 @@
       </property>
      </widget>
     </widget>
+    <widget class="QPushButton" name="lp_start_clive_video">
+     <property name="geometry">
+      <rect>
+       <x>640</x>
+       <y>80</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>开始分割</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab">
     <attribute name="title">
      <string>FPS测试</string>
     </attribute>
+    <widget class="QWidget" name="horizontalLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>50</y>
+       <width>811</width>
+       <height>541</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="fps_layout"/>
+    </widget>
+    <widget class="QPushButton" name="fps_start_test">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>10</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>开始测试</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">

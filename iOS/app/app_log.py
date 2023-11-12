@@ -7,10 +7,7 @@
 @Desc    :
 """
 import subprocess
-import sys
 from typing import Optional
-
-from iOS.app import common
 
 
 class App_Log(object):

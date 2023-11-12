@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QApplication, QFileDialog
 import sys
 
 from airtest.core.android import Android
-from Android.app import app_start, video_cut, base
+from Android.app import app_start, video_cut, base, network
 
 # 注意：ui界面文件是个对话框，那么MyApp就必须继承 QDialog
 # 类似的，若ui界面文件是个MainWindow，那么MyApp就必须继承 QMainWindow
@@ -15,12 +15,13 @@ from Android.app.app_start import StartMethod
 class MyApp(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
-        uic.loadUi('D:\\WorkDemo\\device_tool\\ui\\android2.ui', self)
+        uic.loadUi('D:\\WorkDemo\\device_tool\\ui\\android.ui', self)
         # self.dev = Android()
         # 获取基础设备相关信息
         # self.init_ui_base()
         # self.init_ui_start()
-        self.init_ui_lp()
+        # self.init_ui_lp()
+        self.init_ui_fps()
 
     def init_ui_base(self):
         base_ = base.BaseMethod(self.dev)
@@ -46,6 +47,10 @@ class MyApp(QtWidgets.QDialog):
                                                              num=int(
                                                                  self.start_test_num.text()) if self.start_test_num.text() != "" else 3))
         )
+
+    def init_ui_fps(self):
+        app_ = network.AppNetworkMethod()
+        self.fps_start_test.clicked.connect(lambda: app_.start_(self.fps_layout))
 
     def onFileChoose(self):
         self.cwd = os.getcwd()
