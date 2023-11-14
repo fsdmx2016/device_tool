@@ -9,8 +9,7 @@ from matplotlib.figure import Figure
 import random
 
 
-class AppNetworkMethod:
-
+class AppInfoMethod:
     def start_(self, layout):
         # 创建一个Matplotlib图形对象
         self.figure = Figure()
@@ -37,6 +36,5 @@ class AppNetworkMethod:
         y = [random.randint(0, 10) for _ in range(10)]
         # 绘制折线图
         ax.plot(x, y)
-
         # 刷新图形
         self.canvas.draw()

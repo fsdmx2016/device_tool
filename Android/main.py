@@ -1,7 +1,7 @@
 import os
 import time
 
-from PyQt5 import QtWidgets, uic,QtCore
+from PyQt5 import QtWidgets, uic, QtCore
 import sys
 
 from PyQt5.QtCore import QTimer
@@ -19,15 +19,19 @@ class MyApp(QtWidgets.QDialog):
         self.dev = Android()
         # 获取基础设备相关信息
         self.init_ui_base()
-        self.init_ui_start()
+        # app_启动时间
+        self.init_ui_start_time()
+        # 视频相关初始化
         self.init_ui_lp()
+        # fps相关
         self.init_ui_fps()
+        # log日志相关
+        self.init_ui_log()
         time.sleep(3)
-        # 每500ms获取一次安卓图像信息
+        # 安卓投屏相关服务
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_screen)
         self.timer.start(500)
-        self.init_ui_log()
 
     def init_ui_base(self):
         base_ = base.BaseMethod(self.dev)
@@ -41,15 +45,15 @@ class MyApp(QtWidgets.QDialog):
         self.worker_thread.update_signal.connect(self.update_line_edit)
         self.stop_get_Log.clicked.connect(self.stop_thread)
 
+    # 视频相关
     def init_ui_lp(self):
-        # 录制视频按钮点击事件
         app_ = video_cut.Video_Cut()
         self.lp_choice_video.clicked.connect(self.onFileChoose)
         self.lp_start_clive_video.clicked.connect(
             lambda: app_.start_covert_video(self.lp_video_file_path.text(), self.lp_pictures))
 
     # 加载启动时间页面的UI文件
-    def init_ui_start(self):
+    def init_ui_start_time(self):
         app_ = app_start.StartMethod(self.dev)
 
         self.start_get_current_activity.clicked.connect(
