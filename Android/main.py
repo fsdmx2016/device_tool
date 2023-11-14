@@ -1,19 +1,15 @@
 import os
 import time
 
-from PyQt5 import QtWidgets, uic
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5 import QtWidgets, uic,QtCore
 import sys
-from PyQt5 import QtCore
+
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QFileDialog
 from PyQt5.QtGui import QPixmap, QImage
 from airtest.core.android import Android
-from Android.app import app_start, video_cut, base, network, app_phone
-
-# 注意：ui界面文件是个对话框，那么MyApp就必须继承 QDialog
-# 类似的，若ui界面文件是个MainWindow，那么MyApp就必须继承 QMainWindow
-from Android.app.app_start import StartMethod
+from Android.app import app_start, video_cut, base, network
+from Android.app.app_log import LogThread
 
 
 class MyApp(QtWidgets.QDialog):
@@ -22,27 +18,28 @@ class MyApp(QtWidgets.QDialog):
         uic.loadUi('/Users/sunpeng/Documents/review/device_tool/ui/android.ui', self)
         self.dev = Android()
         # 获取基础设备相关信息
-        # self.init_ui_base()
-        # self.init_ui_start()
-        # self.init_ui_lp()
-        # self.init_ui_fps()
-        # self.show_img()
+        self.init_ui_base()
+        self.init_ui_start()
+        self.init_ui_lp()
+        self.init_ui_fps()
         time.sleep(3)
+        # 每500ms获取一次安卓图像信息
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_screen)
         self.timer.start(500)
-
-        # 顶部设备信息相关
+        self.init_ui_log()
 
     def init_ui_base(self):
         base_ = base.BaseMethod(self.dev)
         app_list = base_.get_app_list()
         self.device_app_list.addItems(app_list)
 
-    # 左侧安卓屏幕展示
-    def init_phone_img(self):
-        phone_info = app_phone.InitMethod(self.dev, self.phone_show)
-        phone_info.show_img()
+    def init_ui_log(self):
+        # 开启日志相关
+        self.start_get_Log.clicked.connect(self.start_thread)
+        self.worker_thread = LogThread(self.dev, self.show_log)
+        self.worker_thread.update_signal.connect(self.update_line_edit)
+        self.stop_get_Log.clicked.connect(self.stop_thread)
 
     def init_ui_lp(self):
         # 录制视频按钮点击事件
@@ -90,6 +87,18 @@ class MyApp(QtWidgets.QDialog):
         scaled_pixmap = pixmap.scaled(self.phone_show.width(), self.phone_show.height(),
                                       QtCore.Qt.AspectRatioMode.KeepAspectRatio)  # 缩放图像以适应 QLabel 大小
         self.phone_show.setPixmap(scaled_pixmap)  # 在 QLabel 上显示缩放后的图像
+
+    def start_thread(self):
+        self.worker_thread.start()
+
+    def stop_thread(self):
+        self.worker_thread.terminate()
+
+    def update_line_edit(self, text):
+        self.show_log.append(str(text))
+        # 滚动到底部
+        scrollbar = self.show_log.verticalScrollBar()
+        scrollbar.setValue(scrollbar.maximum())
 
 
 if __name__ == "__main__":
