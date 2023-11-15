@@ -83,27 +83,14 @@ class MyApp(QtWidgets.QDialog):
                 pixmapRect.moveTop(contentsRect.center().y() - pixmapRect.height() / 2)
 
             if not pos in pixmapRect:
-                # outside image margins, ignore!
                 return
-            # translate coordinates to the image position and convert it back to
-            # a QPoint, which is integer based
             pos = (pos - pixmapRect.topLeft()).toPoint()
         x_val=pos.x()
         y_val=pos.y()
         os.system(f"adb shell input tap {x_val} {y_val}")
-        # print('X={}, Y={}'.format(pos.x(), pos.y()))
 
 
 
-class MyLabel(ClickableLabel):
-    def mousePressEvent(self, event):
-        super().mousePressEvent(event)
-        if self.pixmap() is not None:
-            x = event.x()
-            y = event.y()
-            print("鼠标点击的坐标：", x, y)
-            # 执行ADB点击操作，替换为你的ADB点击代码
-            os.system(f"adb shell input tap {x} {y}")
 
 
 if __name__ == "__main__":
