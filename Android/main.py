@@ -4,12 +4,13 @@ import time
 from PyQt5 import QtWidgets, uic, QtCore
 import sys
 
-from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QApplication, QFileDialog
+from PyQt5.QtCore import QTimer, pyqtSignal, Qt
+from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel
 from PyQt5.QtGui import QPixmap, QImage
 from airtest.core.android import Android
 from Android.app import app_start, video_cut, base, network
 from Android.app.app_log import LogThread
+from Android.app.app_phone import ClickableLabel
 
 
 class MyApp(QtWidgets.QDialog):
@@ -32,6 +33,8 @@ class MyApp(QtWidgets.QDialog):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_screen)
         self.timer.start(500)
+        self.phone_show.setAttribute(Qt.WA_TransparentForMouseEvents)
+        self.phone_show.show()
 
     def init_ui_base(self):
         base_ = base.BaseMethod(self.dev)
@@ -90,6 +93,7 @@ class MyApp(QtWidgets.QDialog):
         pixmap = QPixmap(image)
         scaled_pixmap = pixmap.scaled(self.phone_show.width(), self.phone_show.height(),
                                       QtCore.Qt.AspectRatioMode.KeepAspectRatio)  # 缩放图像以适应 QLabel 大小
+        self.phone_show = MyLabel()
         self.phone_show.setPixmap(scaled_pixmap)  # 在 QLabel 上显示缩放后的图像
 
     def start_thread(self):
@@ -103,6 +107,14 @@ class MyApp(QtWidgets.QDialog):
         # 滚动到底部
         scrollbar = self.show_log.verticalScrollBar()
         scrollbar.setValue(scrollbar.maximum())
+
+
+class MyLabel(QLabel):
+    def mousePressEvent(self, event):
+        if self.pixmap() is not None:
+            x = event.x()
+            y = event.y()
+            print("鼠标点击的坐标：", x, y)
 
 
 if __name__ == "__main__":
