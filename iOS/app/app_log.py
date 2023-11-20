@@ -33,8 +33,3 @@ class App_Log(object):
     def export_syslog(self, file_path):
         global content
 
-
-
-if __name__ == '__main__':
-    app_ = App_Log()
-    app_.realtime_syslog("mtxx")

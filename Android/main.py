@@ -8,7 +8,7 @@ from PyQt5.QtCore import QTimer, pyqtSignal, Qt
 from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel
 from PyQt5.QtGui import QPixmap, QImage
 from airtest.core.android import Android
-from Android.app import app_start, video_cut, base, network
+from Android.app import app_start, video_cut, base, network, app_info
 from Android.app.app_log import LogThread
 from Android.app.app_phone import ClickableLabel
 
@@ -16,25 +16,26 @@ from Android.app.app_phone import ClickableLabel
 class MyApp(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
-        uic.loadUi('/Users/sunpeng/Documents/review/device_tool/ui/android.ui', self)
+        uic.loadUi('/Users/sunpeng/Documents/review/device_tool/ui/android2.ui', self)
         self.dev = Android()
-        # 获取基础设备相关信息
-        self.init_ui_base()
-        # app_启动时间
-        self.init_ui_start_time()
-        # 视频相关初始化
-        self.init_ui_lp()
-        # fps相关
-        self.init_ui_fps()
-        # log日志相关
-        self.init_ui_log()
-        time.sleep(3)
-        # 安卓投屏相关服务
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_screen)
-        self.timer.start(500)
-        self.phone_show.setAttribute(Qt.WA_TransparentForMouseEvents)
-        self.phone_show.show()
+        # # 获取基础设备相关信息
+        # self.init_ui_base()
+        # # app_启动时间
+        # self.init_ui_start_time()
+        # # 视频相关初始化
+        # self.init_ui_lp()
+        # # fps相关
+        # self.init_ui_fps()
+        # # log日志相关
+        # self.init_ui_log()
+        # time.sleep(3)
+        # # 安卓投屏相关服务
+        # self.timer = QTimer(self)
+        # self.timer.timeout.connect(self.update_screen)
+        # self.timer.start(500)
+        # self.phone_show.setAttribute(Qt.WA_TransparentForMouseEvents)
+        # self.phone_show.show()
+        self.init_ui_auto_test()
 
     def init_ui_base(self):
         base_ = base.BaseMethod(self.dev)
@@ -44,7 +45,8 @@ class MyApp(QtWidgets.QDialog):
     def init_ui_log(self):
         # 开启日志相关
         self.start_get_Log.clicked.connect(self.start_thread)
-        self.worker_thread = LogThread(self.dev, self.show_log)
+        # 当前选中的APP
+        self.worker_thread = LogThread(self.dev, self.show_log,self.device_app_list.currentText())
         self.worker_thread.update_signal.connect(self.update_line_edit)
         self.stop_get_Log.clicked.connect(self.stop_thread)
 
@@ -73,6 +75,11 @@ class MyApp(QtWidgets.QDialog):
     def init_ui_fps(self):
         app_ = network.AppNetworkMethod()
         self.fps_start_test.clicked.connect(lambda: app_.start_(self.fps_layout))
+
+    # 加载RAM页面的UI文件
+    def init_ui_auto_test(self):
+        app_ = app_info.AppInfoMethod(self.dev, self.mem_layout)
+        self.start_mem_test.clicked.connect(lambda: app_.get_mem_info(self.mem_layout))
 
     def onFileChoose(self):
         cwd = os.getcwd()

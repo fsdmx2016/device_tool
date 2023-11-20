@@ -82,10 +82,10 @@ class Video_Cut():
         scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         scroll_area.setWidget(QWidget())
-        show_img_list=sorted(picture_list)
-        print(show_img_list)
+        # 排序
+        picture_list=sorted(picture_list)
         # 在水平布局中添加图片
-        for image_path in show_img_list:
+        for image_path in picture_list:
             image_label = QLabel()
             pixmap = QPixmap(image_path)
             image_label.setPixmap(pixmap.scaledToWidth(500))  # 根据需要设置图片宽度
