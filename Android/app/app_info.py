@@ -1,7 +1,5 @@
-import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-import random
 import datetime
 
 X = []
@@ -9,22 +7,18 @@ Y = []
 
 
 class AppInfoMethod:
-    def __init__(self, dev, label,package_name):
+    def __init__(self, dev, label, package_name):
         self.dev = dev
         self.label = label
-        self.package_name=package_name
+        self.package_name = package_name
 
     def get_app_cpu_info(self, package_name: str):
         app_pid = self.dev.shell("pidof " + package_name)
-        cpu_m = self.dev.shell("adb shell cat /proc/" + app_pid + "/sta")
-        # cpu_m = "adb shell cat /proc/<PID>/sta"
-
-    # def get_app_mem_info(self, package_name: str):
-    #     mem_ = self.dev.shell("adb shell dumpsys meminfo " + package_name + "")
+        cpu_info = self.dev.shell("cat /proc/" + app_pid + "/sta")
+        return cpu_info
 
     # 获取应用的内存信息
-
-    def get_app_memory(self, package_name):
+    def get_app_memory(self, package_name: str):
         command = f"dumpsys meminfo {package_name}"
         output = self.dev.shell(command)
         if output:
@@ -58,7 +52,7 @@ class AppInfoMethod:
         current_time = datetime.datetime.now().strftime("%H:%M:%S")
         X.append(current_time)
         # 绘制折线图.
-        Y.append(AppInfoMethod.get_app_memory(self,self.package_name))
+        Y.append(AppInfoMethod.get_app_memory(self, self.package_name))
         if len(X) > 5:
             X = X[-5:]
             Y = Y[-5:]
