@@ -2,8 +2,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import datetime
 
-X = []
-Y = []
+mem_X = []
+mem_Y = []
 
 
 class AppInfoMethod:
@@ -31,35 +31,31 @@ class AppInfoMethod:
             return None
 
     def get_mem_info(self, layout):
-        # 创建一个Matplotlib图形对象
         self.figure = Figure()
-        # 创建一个绘图区域对象
         self.canvas = FigureCanvas(self.figure)
-        # 创建一个垂直布局
         layout.addWidget(self.canvas)
-        # 启动定时器以更新图形
         self.timer = self.canvas.new_timer(interval=1000)  # 每秒更新一次
         self.timer.add_callback(self.update_plot)
         self.timer.start()
 
     def update_plot(self, ):
-        global X, Y
+        global mem_X, mem_Y
         # 清除图形
         self.figure.clear()
         # 创建一个绘图子区域对象
         ax = self.figure.add_subplot(111)
         # 模拟数据更新
         current_time = datetime.datetime.now().strftime("%H:%M:%S")
-        X.append(current_time)
+        mem_X.append(current_time)
         # 绘制折线图.
-        Y.append(AppInfoMethod.get_app_memory(self, self.package_name))
-        if len(X) > 5:
-            X = X[-5:]
-            Y = Y[-5:]
+        mem_Y.append(AppInfoMethod.get_app_memory(self, self.package_name))
+        if len(mem_X) > 5:
+            mem_X = mem_X[-5:]
+            mem_Y = mem_Y[-5:]
         # 设置X轴标签
         ax.set_xlabel('Time')
         # 设置Y轴标签
         ax.set_ylabel('Memory')
-        ax.plot(X, Y)
+        ax.plot(mem_X, mem_Y)
         # 刷新图形
         self.canvas.draw()
