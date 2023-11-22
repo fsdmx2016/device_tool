@@ -1,3 +1,11 @@
+#!/usr/bin/python
+# encoding=utf-8
+
+"""
+@Author  :  SunPeng
+@Date    :  2023/11/22 15:57
+@Desc    :
+"""
 import os
 import time
 
@@ -16,7 +24,7 @@ from Android.app.app_phone import ClickableLabel
 class MyApp(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
-        uic.loadUi('/Users/sunpeng/Documents/review/device_tool/ui/android.ui', self)
+        uic.loadUi('/Users/sunpeng/Documents/review/device_tool/ui/android2.ui', self)
         self.dev = Android()
 
         time.sleep(3)
@@ -32,7 +40,6 @@ class MyApp(QtWidgets.QDialog):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_screen)
         self.timer.start(500)
-
 
     def update_screen(self):
         img = self.dev.snapshot(quality=100)
@@ -50,9 +57,9 @@ class MyApp(QtWidgets.QDialog):
 
     def eventFilter(self, source, event):
         if (source == self.phone_show and source.pixmap() and not source.pixmap().isNull() and
-            event.type() == QtCore.QEvent.MouseButtonPress and
-            event.button() == QtCore.Qt.LeftButton):
-                self.getClickedPosition(event.pos())
+                event.type() == QtCore.QEvent.MouseButtonPress and
+                event.button() == QtCore.Qt.LeftButton):
+            self.getClickedPosition(event.pos())
         return super().eventFilter(source, event)
 
     def getClickedPosition(self, pos):
@@ -85,12 +92,25 @@ class MyApp(QtWidgets.QDialog):
             if not pos in pixmapRect:
                 return
             pos = (pos - pixmapRect.topLeft()).toPoint()
-        x_val=pos.x()
-        y_val=pos.y()
+        # x_val=pos.x()
+        # y_val=pos.y()
+        # x_, y_ = self.get_screen_resolution()
+        # x_val = pos.x()
+        # y_val = pos.y()
+        x_ = 1440
+        y_ = 3080
+        x_val = int(pos.x() * x_ / pixmapRect.width())
+        y_val = int(pos.y() * y_ / pixmapRect.height())
+        print(x_val, y_val)
         os.system(f"adb shell input tap {x_val} {y_val}")
 
-
-
+    def get_screen_resolution(self):
+        result = self.dev.shell("wm size")
+        # result = subprocess.run(['adb', 'shell', 'wm', 'size'], stdout=subprocess.PIPE)
+        output = result.stdout.decode('utf-8').strip()
+        resolution = output.split(' ')[-1]
+        width, height = resolution.split('x')
+        return int(width), int(height)
 
 
 if __name__ == "__main__":
