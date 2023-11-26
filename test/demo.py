@@ -8,34 +8,36 @@
 import os, csv, time, datetime, sys
 from time import sleep
 
-import pandas as pd
 
-class Logger(object):
-    def __init__(self, filename='default.log', stream=sys.stdout):
-        self.terminal = stream
-        self.log = open(filename, 'a+')
+# import pandas as pd
 
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)
-
-    def flush(self):
-        pass
-
-
-# 将控制台输出到日志文件中，日志是追加模式，记得定时清理
-# 便于检验数据获取是否正确。也可将这部分删除
-sys.stdout = Logger('../log/stout_log.log', sys.stdout)
-sys.stderr = Logger('../log/stout.log_file', sys.stderr)
+# class Logger(object):
+#     def __init__(self, filename='default.log', stream=sys.stdout):
+#         self.terminal = stream
+#         self.log = open(filename, 'a+')
+#
+#     def write(self, message):
+#         self.terminal.write(message)
+#         self.log.write(message)
+#
+#     def flush(self):
+#         pass
+#
+#
+# # 将控制台输出到日志文件中，日志是追加模式，记得定时清理
+# # 便于检验数据获取是否正确。也可将这部分删除
+# sys.stdout = Logger('../log/stout_log.log', sys.stdout)
+# sys.stderr = Logger('../log/stout.log_file', sys.stderr)
 
 
 # 可用
 class PertestInfo:
-    def __init__(self, appName, deviceName, PerfDataFile, runTime, *progress):
-        self.PerfDataFile = PerfDataFile
+    def __init__(self, appName, deviceName, runTime, *progress):
+        # PerfDataFile,
+        # self.PerfDataFile = PerfDataFile
         # 分割线，便于定位日志
         print("{:*^50s}".format("Split Line"))
-        print("{:+^50s}".format(self.PerfDataFile))
+        # print("{:+^50s}".format(self.PerfDataFile))
 
         self.appName = appName  # 要测试的app
         self.progress = progress  # 要测试的进程，一个应用可能有多个进程
@@ -47,7 +49,7 @@ class PertestInfo:
 
     def clear_getsize(self, file_path):
         # 可以写成一个装饰器，待优化
-        with open(file_path,'w'):
+        with open(file_path, 'w'):
             pass
         start_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
         os.popen('adb -s {} shell top -n 1 > {}'.format(deviceName, file_path))
@@ -59,27 +61,27 @@ class PertestInfo:
         print('运行top命令开始时间：', start_time)
         print('运行top命令数据保存到文件的结束时间：', end_time)
 
+    # 获取系统信息
+    def get_sys_info(self):
+        if sys.platform.startswith('win'):
+            return "windows"
+        elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+            return "linux"
+
     def get_PID(self):
-        # 获取pid
-        appPID = {}
-        # result = os.popen('adb -s {} shell ps | grep {}'.format(self.deviceName, appName))
+        pid=''
         for app in self.progress:
-            # print('app:', app)
-            result = os.popen('adb -s {} shell ps | grep {}'.format(self.deviceName, app))
-            # print("pid result:", result)
+            if PertestInfo.get_sys_info(self) == "windows":
+                result = os.popen('adb -s {} shell ps | findstr {}'.format(self.deviceName, app))
+            else:
+                result = os.popen('adb -s {} shell ps | grep {}'.format(self.deviceName, app))
             for line in result.readlines():
-                print('line:', line, type(line))
                 line = '#'.join(line.split()) + '#'
-                # print('line#:', line)
                 appstr = app + '#'
                 if appstr in line:
-                    print('line#:', line)
                     pid = line.split('#')[1]
-                    # print("pid:", pid)
-                    appPID[app] = pid
-        print('appPID:', appPID)
-        sleep(1)
-        return appPID
+        # print('appPID:', appPID)
+        return pid
 
     def sed_result(self, original_path, keyword, result_path):
         # 获取开始、结束行数
@@ -150,9 +152,9 @@ class PertestInfo:
         original_path = '../log/original_data.txt'
         result_path = '../log/sed_result.txt'
         # 先清空之前的内容
-        with open(original_path,'w'):
+        with open(original_path, 'w'):
             pass
-        with open(result_path,'w'):
+        with open(result_path, 'w'):
             pass
         start_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
         str1 = '  Estimated power use (mAh):'
@@ -191,33 +193,12 @@ class PertestInfo:
         print('battery:\n', battery)
         return battery
 
-    def get_cpuinfo(self):
-        # 获取PID
-        appPID = self.get_PID()
-        # print("appPID:", appPID)
+    def get_cpuinfo(self,appPID):
         appCPU = {}
-        file_path = '../log/cpuinfo.txt'
-        # 先清空之前的内容
-        with open(file_path,'w'):
-            pass
-        start_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
-        os.popen('adb -s {} shell top -n 1 > {}'.format(deviceName, file_path))
-        while not os.path.getsize(file_path):
-            # os.path.getsize() 返回文件的字节数，如果为 0，则代表空
-            # 判断执行top命令返回的数据是否存入文件
-            sleep(1)
-        end_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
-        print('运行top命令开始时间：', start_time)
-        print('运行top命令数据保存到文件的结束时间：', end_time)
-
-        with open(file_path, 'r') as f:
-            for line in f.readlines():
-                for app in self.progress:
-                    if app in appPID.keys():
-                        if appPID[app] in line:
-
-                            cpu = round(float(line.split()[-4]) / 8, 2)
-                            appCPU[app] = cpu
+        result = os.popen('adb -s {} shell top -n 1'.format(deviceName))
+        for line in result.readlines():
+            if line.split().__contains__(appPID):
+                appCPU=round(float(line.split()[-4]) / 8, 2)
         print("appCPU:", appCPU)
         return appCPU
 
@@ -251,9 +232,9 @@ class PertestInfo:
         original_path = '../log/original_data.txt'
         result_path = '../log/sed_result.txt'
         # 先清空之前的内容
-        with open(original_path,'w'):
+        with open(original_path, 'w'):
             pass
-        with open(result_path,'w'):
+        with open(result_path, 'w'):
             pass
         start_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
 
@@ -469,19 +450,22 @@ class PertestInfo:
 
 
 if __name__ == '__main__':
-    deviceName = ''  # oppo reno6
-    appName = ''   # ZegoLand
+    deviceName = '10AC4608S6000Z8'  # oppo reno6
+    appName = 'com.mt.mtxx.mtxx'  # ZegoLand
 
     # 运行时常
     runTime = 60
-    PerfDataFile = "OPPOreno.csv".format(
-        str(time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())))
+    # PerfDataFile = "OPPOreno.csv".format(
+    #     str(time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())))
     # 应用包含多个进程时，存放于*progress
     # ZL
     # phone = PertestInfo(appName, deviceName, PerfDataFile, runTime, 'im.zego.zegoland:zegoland_avatar',
     #                     'im.zego.zegoland:zegoland_unity',
     #                     'im.zego.zegoland')
-    phone = PertestInfo(appName, deviceName, PerfDataFile, runTime,'com.zego.goavatar')
+    phone = PertestInfo(appName, deviceName, runTime, 'com.mt.mtxx.mtxx')
+    app_id=phone.get_PID()
+    for i in range(10):
+        phone.get_cpuinfo(app_id)
     # appPID = phone.get_PID()
     # phone.get_battery()
     # phone.get_GUsage()

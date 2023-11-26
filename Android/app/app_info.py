@@ -7,10 +7,9 @@ mem_Y = []
 
 
 class AppInfoMethod:
-    def __init__(self, dev, label, package_name):
+    def __init__(self, dev, label):
         self.dev = dev
         self.label = label
-        self.package_name = package_name
 
     def get_app_cpu_info(self, package_name: str):
         app_pid = self.dev.shell("pidof " + package_name)
@@ -19,8 +18,7 @@ class AppInfoMethod:
 
     # 获取应用的内存信息
     def get_app_memory(self, package_name: str):
-        command = f"dumpsys meminfo {package_name}"
-        output = self.dev.shell(command)
+        output = self.dev.shell("dumpsys meminfo " + package_name + "")
         if output:
             # 解析输出并提取内存信息
             lines = output.splitlines()
@@ -30,21 +28,19 @@ class AppInfoMethod:
                     return int(int(memory_info) / 1024)
             return None
 
-    def get_mem_info(self, layout):
+    def get_mem_info(self, layout, package_name):
         self.figure = Figure()
         self.canvas = FigureCanvas(self.figure)
         layout.addWidget(self.canvas)
+        self.package_name = package_name
         self.timer = self.canvas.new_timer(interval=1000)  # 每秒更新一次
         self.timer.add_callback(self.update_plot)
         self.timer.start()
 
-    def update_plot(self, ):
+    def update_plot(self):
         global mem_X, mem_Y
-        # 清除图形
         self.figure.clear()
-        # 创建一个绘图子区域对象
         ax = self.figure.add_subplot(111)
-        # 模拟数据更新
         current_time = datetime.datetime.now().strftime("%H:%M:%S")
         mem_X.append(current_time)
         # 绘制折线图.

@@ -24,7 +24,7 @@ from Android.app.app_phone import ClickableLabel
 class MyApp(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
-        uic.loadUi('/Users/sunpeng/Documents/review/device_tool/ui/android2.ui', self)
+        uic.loadUi('D:\\WorkDemo\\device_tool\\ui\\android2.ui', self)
         self.dev = Android()
 
         time.sleep(3)
@@ -74,7 +74,7 @@ class MyApp(QtWidgets.QDialog):
         if self.phone_show.hasScaledContents():
             x = pos.x() * pixmapRect.width() / contentsRect.width()
             y = pos.y() * pixmapRect.height() / contentsRect.height()
-            pos = QtCore.QPoint(x, y)
+            pos = QtCore.QPoint(int(x), int(y))
         else:
             align = self.phone_show.alignment()
             pixmapRect = QtCore.QRectF(pixmapRect)
