@@ -74,7 +74,8 @@ class MyApp(QtWidgets.QDialog):
     # 加载性能测试的页面的UI文件
     def init_ui_performance(self):
         app_ = app_performance.Appa_Performance(self.dev,self.fps_layout,self.cpu_layout,self.mem_layout)
-        self.performance_start_test.clicked.connect(lambda: app_.start_test(self.device_app_list.currentText()))
+        self.performance_start_mem_test.clicked.connect(lambda: app_.make_mem_canvas(self.mem_layout,self.device_app_list.currentText()))
+        self.performance_start_cpu_test.clicked.connect(lambda: app_.make_cpu_canvas(self.cpu_layout,self.device_app_list.currentText()))
 
     # 加载RAM页面的UI文件
     def init_ui_auto_test(self):

@@ -69,7 +69,7 @@ class PertestInfo:
             return "linux"
 
     def get_PID(self):
-        pid=''
+        pid = ''
         for app in self.progress:
             if PertestInfo.get_sys_info(self) == "windows":
                 result = os.popen('adb -s {} shell ps | findstr {}'.format(self.deviceName, app))
@@ -138,43 +138,22 @@ class PertestInfo:
         os.popen("adb -s {} shell dumpsys batterystats --reset".format(self.deviceName))  # 重置设备耗电数据
 
     def get_battery(self):
-        # 获取耗电量，单位：mAh
-        # 一定要WiFi模式连接手机
+
         battery = {'battery_sum': '', 'battery_screen': '', 'battery_cpu': '', 'battery_camera': '', 'battery_wifi': '',
                    'battery_system_services': '', 'battery_sensors': '', 'battery_audio': ''}
         # 获取进程ID:uid
-        cmd1 = "adb -s {} shell ps | grep {}".format(self.deviceName, self.appName)
+        cmd1 = "adb  shell ps | findstr {}".format(self.appName)
         uid_data = os.popen(cmd1).read()
         uid_original = uid_data.split()[0]
         uid = uid_original.replace('_', '')
-        print('uid:', uid)
-
-        original_path = '../log/original_data.txt'
-        result_path = '../log/sed_result.txt'
-        # 先清空之前的内容
-        with open(original_path, 'w'):
-            pass
-        with open(result_path, 'w'):
-            pass
-        start_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
-        str1 = '  Estimated power use (mAh):'
-        cmd2 = 'adb -s {} shell dumpsys batterystats > {}'.format(self.deviceName, original_path)
-        os.popen(cmd2)
-        while not os.path.getsize(original_path):
-            # os.path.getsize() 返回文件的字节数，如果为 0，则代表空
-            # 耗电量数据存储需要时间，判断执行top命令返回的数据是否存入文件
-            sleep(1)
-        end_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
-        print('运行获取耗电量开始时间：', start_time)
-        print('运行耗电量数据保存到文件的结束时间：', end_time)
-        self.sed_result(original_path=original_path, keyword=str1, result_path=result_path)
-        while not os.path.getsize(result_path):
-            sleep(1)
-        with open(result_path, 'r') as f:
-            for line in f.readlines():
-                if uid in line:
-                    print('battery_line:', line)
-                    line = '#'.join(line.split())
+        # print('uid:', uid)
+        cmd2 = 'adb  shell dumpsys batterystats '.format(self.deviceName)
+        result=os.popen(cmd2)
+        for line in result.readlines():
+            if uid in line:
+                # print('battery_line:', line)
+                line = '#'.join(line.split())
+                if len(line.split("#"))>1:
                     battery['battery_sum'] = line.split('#')[2]
                     if 'screen=' in line:
                         battery['battery_screen'] = line.split('screen=')[1].split('#')[0]
@@ -193,12 +172,12 @@ class PertestInfo:
         print('battery:\n', battery)
         return battery
 
-    def get_cpuinfo(self,appPID):
+    def get_cpuinfo(self, appPID):
         appCPU = {}
         result = os.popen('adb -s {} shell top -n 1'.format(deviceName))
         for line in result.readlines():
             if line.split().__contains__(appPID):
-                appCPU=round(float(line.split()[-4]) / 8, 2)
+                appCPU = round(float(line.split()[-4]) / 8, 2)
         print("appCPU:", appCPU)
         return appCPU
 
@@ -463,9 +442,11 @@ if __name__ == '__main__':
     #                     'im.zego.zegoland:zegoland_unity',
     #                     'im.zego.zegoland')
     phone = PertestInfo(appName, deviceName, runTime, 'com.mt.mtxx.mtxx')
-    app_id=phone.get_PID()
-    for i in range(10):
-        phone.get_cpuinfo(app_id)
+    # app_id = phone.get_PID()
+    # for i in range(10):
+    #     phone.get_cpuinfo(app_id)
+    for i in range(5):
+        phone.get_battery()
     # appPID = phone.get_PID()
     # phone.get_battery()
     # phone.get_GUsage()

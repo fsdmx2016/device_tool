@@ -43,9 +43,9 @@ class Appa_Performance:
         pid = ''
         for app in package_name:
             if Appa_Performance.get_sys_info(self) == "windows":
-                result = os.popen('adb -s shell ps | findstr {}'.format(app))
+                result = os.popen('adb shell ps | findstr {}'.format(app))
             else:
-                result = os.popen('adb -s shell ps | grep {}'.format(app))
+                result = os.popen('adb shell ps | grep {}'.format(app))
             for line in result.readlines():
                 line = '#'.join(line.split()) + '#'
                 appstr = app + '#'
