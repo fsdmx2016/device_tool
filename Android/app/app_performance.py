@@ -1,6 +1,7 @@
 import os
 import sys
 
+from PyQt5.QtWidgets import QSpacerItem
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import datetime
@@ -12,6 +13,8 @@ cpu_Y = []
 
 import threading
 from queue import Queue
+
+
 class Appa_Performance:
     def __init__(self, dev, fps_layout, cpu_layout, mem_layout):
         self.dev = dev
@@ -76,6 +79,7 @@ class Appa_Performance:
             return None
 
     def make_mem_canvas(self, layout, package_name):
+        self.deleteAll(layout)
         self.figure = Figure()
         self.canvas = FigureCanvas(self.figure)
         layout.addWidget(self.canvas)
@@ -85,6 +89,7 @@ class Appa_Performance:
         self.timer.start()
 
     def make_cpu_canvas(self, layout, package_name):
+        self.deleteAll(layout)
         self.figure = Figure()
         self.canvas = FigureCanvas(self.figure)
         layout.addWidget(self.canvas)
@@ -92,6 +97,21 @@ class Appa_Performance:
         self.timer = self.canvas.new_timer(interval=1000)  # 每秒更新一次
         self.timer.add_callback(self.update_plot_cpu)
         self.timer.start()
+
+    def deleteAll(self, thisLayout):
+        item_list = list(range(thisLayout.count()))
+        item_list.reverse()  # 倒序删除，避免影响布局顺序
+
+        for i in item_list:
+            item = thisLayout.itemAt(i)
+            if item is not None:
+                if item.widget() is not None:
+                    item.widget().deleteLater()
+                elif isinstance(item, QSpacerItem):
+                    thisLayout.removeItem(item)
+                else:
+                    self.deleteAll(item.layout())
+                thisLayout.removeItem(item)
 
     def update_plot_cpu(self):
         global cpu_X, cpu_Y

@@ -4,29 +4,31 @@ import time
 from PyQt5 import QtWidgets, uic, QtCore
 import sys
 
-from PyQt5.QtCore import QTimer, pyqtSignal, Qt
+from PyQt5.QtCore import QTimer, pyqtSignal, Qt, QThread
 from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel
 from PyQt5.QtGui import QPixmap, QImage
 from airtest.core.android import Android
 from Android.app import app_start, video_cut, base,app_performance, app_info
-from Android.app.app_log import LogThread
+from Android.app.app_log import LogThread, AppLogMethod
+from Base.common import run_adb_command
 
 
 class MyApp(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
-        uic.loadUi('D:\\WorkDemo\\device_tool\\ui\\android2.ui', self)
+        ui_file_path=os.path.dirname(os.path.abspath(os.getcwd()))+"/ui/android2.ui"
+        uic.loadUi(ui_file_path, self)
         self.dev = Android()
         # # 获取基础设备相关信息
         self.init_ui_base()
         # # app_启动时间
-        # self.init_ui_start_time()
+        self.init_ui_start_time()
         # # 视频相关初始化
-        # self.init_ui_lp()
+        self.init_ui_lp()
         # 性能相关
         self.init_ui_performance()
         # log日志相关
-        # self.init_ui_log()
+        self.init_ui_log()
         time.sleep(3)
 
         # 安卓投屏相关服务
@@ -157,13 +159,6 @@ class MyApp(QtWidgets.QDialog):
         scrollbar = self.show_log.verticalScrollBar()
         scrollbar.setValue(scrollbar.maximum())
 
-
-# class MyLabel(QLabel):
-#     def mousePressEvent(self, event):
-#         if self.pixmap() is not None:
-#             x = event.x()
-#             y = event.y()
-#             print("鼠标点击的坐标：", x, y)
 
 
 if __name__ == "__main__":

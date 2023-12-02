@@ -14,7 +14,7 @@ from PyQt5.QtGui import QTextCursor
 class LogThread(QThread):
     update_signal = pyqtSignal(str)
 
-    def __init__(self, label, dev, package_name,parent=None):
+    def __init__(self, dev,label, package_name,parent=None):
         super(LogThread, self).__init__(parent)
         self.label = label
         self.dev = dev
@@ -24,21 +24,20 @@ class LogThread(QThread):
 
     def run(self):
         while True:
-            data = LogThread.get_app_memory(package_name=self.package_name)
+            data = LogThread.get_app_memory(self)
             self.update_signal.emit(str(data))
 
-    # 获取应用的内存信息
-    @staticmethod
-    def get_app_memory(package_name):
-        command = f"adb shell dumpsys meminfo {package_name}"
-        output = run_adb_command(command)
+    # 获取应用的日志信息
+    def get_app_memory(self):
+        package_name=str(self.dev.get_top_activity_name()).split("/")[0]
+        command = f"adb logcat |grep {package_name}"
+        # output = run_adb_command(command)
+        output=self.dev.logcat(grep_str=package_name)
         if output:
             # 解析输出并提取内存信息
-            lines = output.splitlines()
+            lines = str(output).splitlines()
             for line in lines:
-                if line.__contains__("TOTAL"):
-                    memory_info = line.split()[1]
-                    return int(int(memory_info) / 1024)
+                return line
             return None
 
 
