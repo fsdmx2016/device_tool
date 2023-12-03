@@ -7,23 +7,28 @@ import sys
 import threading
 import time
 from builtins import *
-
 from PyQt5.QtWidgets import QSpacerItem
-from airtest.core.android import Android
 from matplotlib.figure import Figure
 import datetime
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
-net_X= []
-net_Y=[]
+net_X = []
+net_Y = []
+
+
 class ParseNetworkInfo(object):
-    def __init__(self, package, networkinfo):
+    def __init__(self, package, networkinfo, network_type):
         self.networkinfo = networkinfo
         self.package = package
-        self.network_data = self.get_network_data("wlan0")
+        self.network_data = self.get_network_data(network_type)
 
     def get_network_data(self, regexp):
         network_info = self.networkinfo.splitlines()[2:]
+        # 对数据类型做判断
+        if regexp == "WLAN":
+            regexp = "wlan0"
+        else:
+            regexp = "rmnet_ipa0"
         acc_downFlow = 0
         acc_upFlow = 0
         for line in network_info:
@@ -43,9 +48,10 @@ class ParseNetworkInfo(object):
 
 
 class NetworkMonitor:
-    def __init__(self,dev):
+    def __init__(self, dev, network_type):
         super().__init__()
         self.dev = dev
+        self.network_type = network_type
 
     def make_network_canvas(self, layout, package_name):
         self.pid = self.get_PID(package_name=package_name)
@@ -72,13 +78,14 @@ class NetworkMonitor:
                 else:
                     self.deleteAll(item.layout())
                 thisLayout.removeItem(item)
+
     def update_plot_network_up(self, ):
         global net_X, net_Y
         self.figure.clear()
         ax = self.figure.add_subplot(111)
         current_time = datetime.datetime.now().strftime("%H:%M:%S")
         net_X.append(current_time)
-        net_Y.append(NetworkMonitor.get_network_info(self, self.pid, self.package_name)[0])
+        net_Y.append(NetworkMonitor.get_network_info(self, self.pid, self.package_name, self.network_type)[0])
         if len(net_X) > 5:
             net_X = net_X[-5:]
             net_Y = net_Y[-5:]
@@ -107,14 +114,14 @@ class NetworkMonitor:
                     pid = line.split('#')[1]
         return pid
 
-    def get_network_info(self, pid, package_name):
+    def get_network_info(self, pid, package_name, network_type):
         network_info = self.dev.shell(f"cat /proc/" + pid + "/net/dev")
         network_info = network_info.strip()
-        network_info = ParseNetworkInfo(package_name, network_info, ).network_data
-        time.sleep(0.5)
+        network_info = ParseNetworkInfo(package_name, network_info, network_type).network_data
+        time.sleep(1)
         network_info2 = self.dev.shell(f"cat /proc/" + pid + "/net/dev")
         network_info2 = network_info2.strip()
-        network_info2 = ParseNetworkInfo(package_name, network_info2, ).network_data
+        network_info2 = ParseNetworkInfo(package_name, network_info2, network_type).network_data
         up_net = network_info2[1] - network_info[1]
         do_net = network_info2[0] - network_info[0]
         print("获取到的network信息是：{},{}".format(network_info2[0] - network_info[0], network_info2[1] - network_info[1]))

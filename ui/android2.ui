@@ -582,6 +582,26 @@
       <string>流量速率-上传</string>
      </property>
     </widget>
+    <widget class="QComboBox" name="network_select">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>70</y>
+       <width>101</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>WLAN</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>4G</string>
+      </property>
+     </item>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">

@@ -47,7 +47,7 @@ class MyApp(QtWidgets.QDialog):
         app_list = base_.get_app_list()
         self.device_app_list.addItems(app_list)
     def init_ui_network(self):
-        app_ = app_network.NetworkMonitor(self.dev)
+        app_ = app_network.NetworkMonitor(self.dev,self.network_select.currentText())
         self.start_network_test.clicked.connect(lambda :app_.make_network_canvas(self.network_layout_down,self.device_app_list.currentText()))
     def phone_click(self):
         self.phone_home.clicked.connect(lambda: self.dev.keyevent("3"))
