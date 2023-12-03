@@ -8,7 +8,7 @@ from PyQt5.QtCore import QTimer, pyqtSignal, Qt, QThread
 from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel
 from PyQt5.QtGui import QPixmap, QImage
 from airtest.core.android import Android
-from Android.app import app_start, video_cut, base, app_performance, app_info
+from Android.app import app_start, video_cut, base, app_performance, app_info, app_network
 from Android.app.app_log import LogThread, AppLogMethod
 from Base.common import run_adb_command
 
@@ -40,12 +40,15 @@ class MyApp(QtWidgets.QDialog):
         self.timer.start(500)
         # 按键注册
         self.phone_click()
+        self.init_ui_network()
 
     def init_ui_base(self):
         base_ = base.BaseMethod(self.dev)
         app_list = base_.get_app_list()
         self.device_app_list.addItems(app_list)
-
+    def init_ui_network(self):
+        app_ = app_network.NetworkMonitor(self.dev)
+        self.start_network_test.clicked.connect(lambda :app_.make_network_canvas(self.network_layout_down,self.device_app_list.currentText()))
     def phone_click(self):
         self.phone_home.clicked.connect(lambda: self.dev.keyevent("3"))
         self.phone_menu.clicked.connect(lambda: self.dev.keyevent("82"))

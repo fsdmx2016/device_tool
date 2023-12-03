@@ -7,9 +7,15 @@ import sys
 import threading
 import time
 from builtins import *
+
+from PyQt5.QtWidgets import QSpacerItem
 from airtest.core.android import Android
+from matplotlib.figure import Figure
+import datetime
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
-
+net_X= []
+net_Y=[]
 class ParseNetworkInfo(object):
     def __init__(self, package, networkinfo):
         self.networkinfo = networkinfo
@@ -23,18 +29,63 @@ class ParseNetworkInfo(object):
         for line in network_info:
             line_info = line.strip().split()
             if re.search(regexp, line_info[0]):
-                acc_downFlow += float(line_info[2]) / 1024  # bytes  -> kb
+                acc_downFlow = float(line_info[2]) / 1024  # bytes  -> kb
                 acc_upFlow += float(line_info[10]) / 1024
-        network_info = [acc_downFlow, acc_upFlow]
+
+        network_info = [self.operate_num(acc_downFlow), self.operate_num(acc_upFlow)]
         return network_info
 
+    def operate_num(self, megabytes):
+        rounded_megabytes = round(megabytes, 1)
+        shifted_megabytes = rounded_megabytes * 100
+        trimmed_megabytes = shifted_megabytes % 1000  # 取模1000，去掉前两位整数部分
+        return trimmed_megabytes
 
-class NetworkMonitor():
-    def __init__(self, test_time=-1, interval=1):
+
+class NetworkMonitor:
+    def __init__(self,dev):
         super().__init__()
-        self.test_time = test_time
-        self.interval = interval
-        self.dev = Android()
+        self.dev = dev
+
+    def make_network_canvas(self, layout, package_name):
+        self.pid = self.get_PID(package_name=package_name)
+        self.deleteAll(layout)
+        self.figure = Figure()
+        self.canvas = FigureCanvas(self.figure)
+        layout.addWidget(self.canvas)
+        self.package_name = package_name
+        self.timer = self.canvas.new_timer(interval=1000)  # 每秒更新一次
+        self.timer.add_callback(self.update_plot_network_up)
+        self.timer.start()
+
+    def deleteAll(self, thisLayout):
+        item_list = list(range(thisLayout.count()))
+        item_list.reverse()  # 倒序删除，避免影响布局顺序
+
+        for i in item_list:
+            item = thisLayout.itemAt(i)
+            if item is not None:
+                if item.widget() is not None:
+                    item.widget().deleteLater()
+                elif isinstance(item, QSpacerItem):
+                    thisLayout.removeItem(item)
+                else:
+                    self.deleteAll(item.layout())
+                thisLayout.removeItem(item)
+    def update_plot_network_up(self, ):
+        global net_X, net_Y
+        self.figure.clear()
+        ax = self.figure.add_subplot(111)
+        current_time = datetime.datetime.now().strftime("%H:%M:%S")
+        net_X.append(current_time)
+        net_Y.append(NetworkMonitor.get_network_info(self, self.pid, self.package_name)[0])
+        if len(net_X) > 5:
+            net_X = net_X[-5:]
+            net_Y = net_Y[-5:]
+        ax.set_xlabel('Time')
+        ax.set_ylabel('Network')
+        ax.plot(net_X, net_Y)
+        self.canvas.draw()
 
     def get_sys_info(self):
         if sys.platform.startswith('win'):
@@ -56,74 +107,15 @@ class NetworkMonitor():
                     pid = line.split('#')[1]
         return pid
 
-    def get_network_info(self, pid):
-        network_info = self.dev.shell(f"cat proc/" + pid + "/net/dev")
+    def get_network_info(self, pid, package_name):
+        network_info = self.dev.shell(f"cat /proc/" + pid + "/net/dev")
         network_info = network_info.strip()
-        network_info = ParseNetworkInfo("com.mt.mtxx.mtxx", network_info, ).network_data
+        network_info = ParseNetworkInfo(package_name, network_info, ).network_data
         time.sleep(0.5)
-        network_info2 = self.dev.shell(f"cat proc/" + pid + "/net/dev")
+        network_info2 = self.dev.shell(f"cat /proc/" + pid + "/net/dev")
         network_info2 = network_info2.strip()
-        network_info2 = ParseNetworkInfo("com.mt.mtxx.mtxx", network_info2, ).network_data
-        print("获取到的network信息是：{}".format(network_info2[0]-network_info[0],network_info2[1]-network_info[1]))
-        return network_info
-
-
-if __name__ == '__main__':
-    demo = NetworkMonitor()
-    pid = demo.get_PID("com.mt.mtxx.mtxx")
-    for i in range(5):
-        demo.get_network_info(pid)
-
-    # def run(self):
-    #     '''
-    #     按照指定频率，循环搜集network的信息
-    #     :return:
-    #     '''
-    #     network_title = ["timestamp", "realtime_downFlow", "realtime_upFlow", "sum_realtimeFlow",
-    #                      "accumulate_downFlow", "accumulate_upFlow", "sum_accumFlow", ]
-    #     network_file = self.save_file
-    #     with open(network_file, 'w+') as df:
-    #         csv.writer(df, lineterminator='\n').writerow(network_title)
-    #
-    #     last_timestamp = None
-    #     last_acc_downFlow = None
-    #     last_acc_upFlow = None
-    #     accumulate_downFlow = 0
-    #     accumulate_upFlow = 0
-    #     network_list = []
-    #     try:
-    #
-    #         before = time.time()
-    #
-    #         network_list.append(before)
-    #         network_info = self.get_network_info()
-    #         if last_timestamp and last_acc_downFlow:
-    #             realtime_downFlow = (diff_downFlow := (network_info[0] - last_acc_downFlow)) / (
-    #                     before - last_timestamp)
-    #             realtime_upFlow = (diff_upFlow := (network_info[1] - last_acc_upFlow)) / (before - last_timestamp)
-    #             if diff_upFlow < 0 or diff_downFlow < 0 or network_info is None:
-    #                 last_timestamp = None
-    #
-    #             else:
-    #                 accumulate_downFlow += diff_downFlow
-    #                 accumulate_upFlow += diff_upFlow
-    #         else:
-    #             last_timestamp = before
-    #             last_acc_downFlow = network_info[0]
-    #             last_acc_upFlow = network_info[1]
-    #         network_list.extend([realtime_downFlow, realtime_upFlow, realtime_downFlow + realtime_upFlow])
-    #         network_list.extend([accumulate_downFlow, accumulate_upFlow, accumulate_downFlow + accumulate_upFlow])
-    #         last_timestamp = before
-    #         last_acc_downFlow = network_info[0]
-    #         last_acc_upFlow = network_info[1]
-    #         after = time.time()
-    #         time_consume = after - before
-    #
-    #         with open(network_file, 'a+', encoding="utf-8") as df:
-    #             csv.writer(df, lineterminator='\n').writerow(network_list)
-    #             del network_list[:]
-    #         delta_inter = self.interval - time_consume
-    #         if delta_inter > 0:
-    #             time.sleep(delta_inter)
-    #     except Exception as e:
-    #         print(e)
+        network_info2 = ParseNetworkInfo(package_name, network_info2, ).network_data
+        up_net = network_info2[1] - network_info[1]
+        do_net = network_info2[0] - network_info[0]
+        print("获取到的network信息是：{},{}".format(network_info2[0] - network_info[0], network_info2[1] - network_info[1]))
+        return do_net, up_net
