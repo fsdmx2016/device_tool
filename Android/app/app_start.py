@@ -15,9 +15,10 @@ class StartMethod:
         out = self.dev.get_top_activity()
         return str(out).split(",")[1].split("'")[1]
 
-    # 获取启动的activity TODO
+    # 获取启动的activity
     def get_start_activity(self, ):
-        return self.dev.shell("")
+        out = self.dev.get_top_activity()
+        return str(out).split(",")[1].split("'")[1]
 
     # 打印所有的APP列表
     def get_list_app(self):

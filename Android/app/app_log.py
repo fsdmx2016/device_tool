@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 import time
 
 from PyQt5.QtCore import QThread
@@ -27,18 +28,25 @@ class LogThread(QThread):
             data = LogThread.get_app_memory(self)
             self.update_signal.emit(str(data))
 
+    def get_sys_info(self):
+        if sys.platform.startswith('win'):
+            return "windows"
+        elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+            return "linux"
     # 获取应用的日志信息
     def get_app_memory(self):
         package_name=str(self.dev.get_top_activity_name()).split("/")[0]
-        command = f"adb logcat |grep {package_name}"
+        # if LogThread.get_sys_info(self) == "windows":
+        #     command = f"adb logcat |findstr {package_name}"
+        # else:
+        #     command = f"adb logcat |grep {package_name}"
         # output = run_adb_command(command)
-        output=self.dev.logcat(grep_str=package_name)
+        output=self.dev.logcat(grep_str=package_name,read_timeout =60)
         if output:
-            # 解析输出并提取内存信息
-            lines = str(output).splitlines()
-            for line in lines:
-                return line
+           return output
+        else:
             return None
+            # return None
 
 
 

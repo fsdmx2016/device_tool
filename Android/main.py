@@ -8,7 +8,7 @@ from PyQt5.QtCore import QTimer, pyqtSignal, Qt, QThread
 from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel
 from PyQt5.QtGui import QPixmap, QImage
 from airtest.core.android import Android
-from Android.app import app_start, video_cut, base,app_performance, app_info
+from Android.app import app_start, video_cut, base, app_performance, app_info
 from Android.app.app_log import LogThread, AppLogMethod
 from Base.common import run_adb_command
 
@@ -16,39 +16,45 @@ from Base.common import run_adb_command
 class MyApp(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
-        ui_file_path=os.path.dirname(os.path.abspath(os.getcwd()))+"/ui/android2.ui"
+        ui_file_path = os.path.dirname(os.path.abspath(os.getcwd())) + "/ui/android2.ui"
         uic.loadUi(ui_file_path, self)
         self.dev = Android()
-        # # 获取基础设备相关信息
+        # 获取基础设备相关信息
         self.init_ui_base()
-        # # app_启动时间
+        # app_启动时间
         self.init_ui_start_time()
-        # # 视频相关初始化
+        # 视频相关初始化
         self.init_ui_lp()
         # 性能相关
         self.init_ui_performance()
         # log日志相关
         self.init_ui_log()
-        time.sleep(3)
-
+        self.init_ui_auto_test()
         # 安卓投屏相关服务
+        time.sleep(3)
         self.phone_show.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.phone_show.setScaledContents(True)
         self.phone_show.installEventFilter(self)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_screen)
         self.timer.start(500)
-        self.init_ui_auto_test()
+        # 按键注册
+        self.phone_click()
 
     def init_ui_base(self):
         base_ = base.BaseMethod(self.dev)
         app_list = base_.get_app_list()
         self.device_app_list.addItems(app_list)
 
+    def phone_click(self):
+        self.phone_home.clicked.connect(lambda: self.dev.keyevent("3"))
+        self.phone_menu.clicked.connect(lambda: self.dev.keyevent("82"))
+        self.phone_back.clicked.connect(lambda: self.dev.keyevent("4"))
+
     def init_ui_log(self):
         # 开启日志相关
         self.start_get_Log.clicked.connect(self.start_thread)
-        self.worker_thread = LogThread(self.dev, self.show_log,self.device_app_list.currentText())
+        self.worker_thread = LogThread(self.dev, self.show_log, self.device_app_list.currentText())
         self.worker_thread.update_signal.connect(self.update_line_edit)
         self.stop_get_Log.clicked.connect(self.stop_thread)
 
@@ -65,7 +71,8 @@ class MyApp(QtWidgets.QDialog):
 
         self.start_get_current_activity.clicked.connect(
             lambda: self.start_input_activity.setText(app_.get_top_activity()))
-        self.start_get_start_activity.clicked.connect(app_.get_start_activity)
+        self.start_get_start_activity.clicked.connect(
+            lambda: self.start_input_activity.setText(app_.get_top_activity()))
         self.start_time_test.clicked.connect(
             lambda: self.label_4.setText(app_.get_start_time(package_name=self.device_app_list.currentText(),
                                                              start_activity=self.start_input_activity.text(),
@@ -75,24 +82,30 @@ class MyApp(QtWidgets.QDialog):
 
     # 加载性能测试的页面的UI文件
     def init_ui_performance(self):
-        app_ = app_performance.Appa_Performance(self.dev,self.fps_layout,self.cpu_layout,self.mem_layout)
-        self.performance_start_mem_test.clicked.connect(lambda: app_.make_mem_canvas(self.mem_layout,self.device_app_list.currentText()))
-        self.performance_start_cpu_test.clicked.connect(lambda: app_.make_cpu_canvas(self.cpu_layout,self.device_app_list.currentText()))
+        app_ = app_performance.Appa_Performance(self.dev, self.fps_layout, self.cpu_layout, self.mem_layout)
+        self.performance_start_mem_test.clicked.connect(
+            lambda: app_.make_mem_canvas(self.mem_layout, self.device_app_list.currentText()))
+        self.performance_start_cpu_test.clicked.connect(
+            lambda: app_.make_cpu_canvas(self.cpu_layout, self.device_app_list.currentText()))
 
     # 加载RAM页面的UI文件
     def init_ui_auto_test(self):
-        app_ = app_info.AppInfoMethod(self.dev, self.mem_layout,)
-        self.start_mem_test.clicked.connect(lambda: app_.get_mem_info(self.mem_layout,self.device_app_list.currentText()))
+        app_ = app_info.AppInfoMethod(self.dev, self.mem_layout, )
+        self.start_mem_test.clicked.connect(
+            lambda: app_.get_mem_info(self.mem_layout, self.device_app_list.currentText()))
 
     def onFileChoose(self):
         cwd = os.getcwd()
         filename, filetype = QFileDialog.getOpenFileName(self, '选择文件',
-                                                         cwd,  # 起始路径
-                                                         'Text Files(*.mp4);;All Files(*)')  # 文件扩展名过滤器
+                                                         cwd,
+                                                         'Text Files(*.mp4);;All Files(*)')
         self.lp_video_file_path.setText(filename)
+
     # 更新图像
     def update_screen(self):
+        # 获取截图图像流
         img = self.dev.snapshot(quality=99)
+        # 将图像流填充到QImage控件中
         image = QImage(
             img,
             img.shape[1],
@@ -102,7 +115,8 @@ class MyApp(QtWidgets.QDialog):
         )
         pixmap = QPixmap(image)
         scaled_pixmap = pixmap.scaled(self.phone_show.width(), self.phone_show.height(),
-                                      QtCore.Qt.AspectRatioMode.KeepAspectRatio)  # 缩放图像以适应 QLabel 大小
+                                      QtCore.Qt.AspectRatioMode.IgnoreAspectRatio)
+        # QtCore.Qt.AspectRatioMode.KeepAspectRatio)
         self.phone_show.setPixmap(scaled_pixmap)  # 在 QLabel 上显示缩放后的图像
 
     def eventFilter(self, source, event):
@@ -139,7 +153,7 @@ class MyApp(QtWidgets.QDialog):
         x_, y_ = self.get_screen_resolution()
         x_val = str(pos.x() * x_ / pixmapRect.width())
         y_val = str(pos.y() * y_ / pixmapRect.height())
-        self.dev.shell("input tap "+x_val+" "+y_val+"")
+        self.dev.shell("input tap " + x_val + " " + y_val + "")
 
     def get_screen_resolution(self):
         result = self.dev.shell("wm size")
@@ -160,9 +174,9 @@ class MyApp(QtWidgets.QDialog):
         scrollbar.setValue(scrollbar.maximum())
 
 
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     myapp = MyApp()
     myapp.show()
+    myapp.setStyleSheet("#myapp{background-color:blue}")
     sys.exit(app.exec())
