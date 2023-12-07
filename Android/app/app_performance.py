@@ -11,10 +11,6 @@ mem_Y = []
 cpu_X = []
 cpu_Y = []
 
-import threading
-from queue import Queue
-
-
 class Appa_Performance:
     def __init__(self, dev, fps_layout, cpu_layout, mem_layout):
         self.dev = dev
