@@ -37,7 +37,7 @@ class MyApp(QtWidgets.QDialog):
         self.phone_show.installEventFilter(self)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_screen)
-        self.timer.start(500)
+        self.timer.start(300)
         # 按键注册
         self.phone_click()
         self.init_ui_network()
