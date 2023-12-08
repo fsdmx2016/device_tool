@@ -46,8 +46,6 @@ class LogThread(QThread):
            return output
         else:
             return None
-            # return None
-
 
 
     def update_text_edit(self, data):
