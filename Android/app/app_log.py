@@ -15,11 +15,11 @@ from PyQt5.QtGui import QTextCursor
 class LogThread(QThread):
     update_signal = pyqtSignal(str)
 
-    def __init__(self, dev,label, package_name,parent=None):
+    def __init__(self, dev, label, package_name, parent=None):
         super(LogThread, self).__init__(parent)
         self.label = label
         self.dev = dev
-        self.package_name=package_name
+        self.package_name = package_name
 
     data_received = pyqtSignal()
 
@@ -33,26 +33,25 @@ class LogThread(QThread):
             return "windows"
         elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
             return "linux"
+
     # 获取应用的日志信息
     def get_app_memory(self):
-        package_name=str(self.dev.get_top_activity_name()).split("/")[0]
-        # if LogThread.get_sys_info(self) == "windows":
-        #     command = f"adb logcat |findstr {package_name}"
-        # else:
-        #     command = f"adb logcat |grep {package_name}"
-        # output = run_adb_command(command)
-        output=self.dev.logcat(grep_str=package_name,read_timeout =60)
-        if output:
-           return output
+        package_name = str(self.dev.get_top_activity_name()).split("/")[0]
+        if LogThread.get_sys_info(self) == "windows":
+            command = f"adb logcat -e {package_name}"
         else:
-            return None
-
+            command = f"adb logcat -e {package_name}"
+        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        while True:
+            line = process.stdout.readline().decode().strip()
+            if not line:
+                break
+            return line
 
     def update_text_edit(self, data):
         self.log_label.append(str(data))
         scrollbar = self.log_label.verticalScrollBar()
         scrollbar.setValue(scrollbar.maximum())
-
 
 
 class AppLogMethod():

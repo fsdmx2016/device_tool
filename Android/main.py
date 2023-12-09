@@ -8,9 +8,11 @@ from PyQt5.QtCore import QTimer, pyqtSignal, Qt, QThread
 from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel
 from PyQt5.QtGui import QPixmap, QImage
 from airtest.core.android import Android
-from Android.app import app_start, video_cut, base, app_performance, app_info, app_network
+from Android.app import app_start, video_cut, base, app_performance, app_info, app_network, app_retry
 from Android.app.app_log import LogThread, AppLogMethod
 from Base.common import run_adb_command
+
+is_save_step = False
 
 
 class MyApp(QtWidgets.QDialog):
@@ -29,7 +31,9 @@ class MyApp(QtWidgets.QDialog):
         self.init_ui_performance()
         # log日志相关
         self.init_ui_log()
-        self.init_ui_auto_test()
+        self.init_ui_network()
+        self.init_retry_script()
+        # self.init_ui_auto_test()
         # 安卓投屏相关服务
         time.sleep(3)
         self.phone_show.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
@@ -40,15 +44,17 @@ class MyApp(QtWidgets.QDialog):
         self.timer.start(300)
         # 按键注册
         self.phone_click()
-        self.init_ui_network()
 
     def init_ui_base(self):
         base_ = base.BaseMethod(self.dev)
         app_list = base_.get_app_list()
         self.device_app_list.addItems(app_list)
+
     def init_ui_network(self):
-        app_ = app_network.NetworkMonitor(self.dev,self.network_select.currentText())
-        self.start_network_test.clicked.connect(lambda :app_.make_network_canvas(self.network_layout_down,self.device_app_list.currentText()))
+        app_ = app_network.NetworkMonitor(self.dev, self.network_select.currentText())
+        self.start_network_test.clicked.connect(
+            lambda: app_.make_network_canvas(self.network_layout_down, self.device_app_list.currentText()))
+
     def phone_click(self):
         self.phone_home.clicked.connect(lambda: self.dev.keyevent("3"))
         self.phone_menu.clicked.connect(lambda: self.dev.keyevent("82"))
@@ -96,6 +102,30 @@ class MyApp(QtWidgets.QDialog):
         app_ = app_info.AppInfoMethod(self.dev, self.mem_layout, )
         self.start_mem_test.clicked.connect(
             lambda: app_.get_mem_info(self.mem_layout, self.device_app_list.currentText()))
+
+    def init_retry_script(self):
+        # retry_step = app_retry.AppRetry(self.dev)
+        # 点击录制循环脚本的时候，开启记忆
+        self.retry_script_cycle.clicked.connect(lambda :self.start_retry_script(self.retry_script_cycle))
+        self.start_script_auto.clicked.connect(self.start_script_auto_step)
+
+    def start_retry_script(self,btn):
+        global is_save_step
+        if btn.text() != "停止录制":
+            is_save_step = True
+            btn.setText("停止录制")
+        else:
+            is_save_step = False
+            btn.setText("录制循环脚本")
+
+    def start_script_auto_step(self):
+        file_path = "D:\WorkDemo\My_Work\device_tool_git\Android\script_file\step.txt"
+        with open(file_path, 'r') as f_input:
+            for line in f_input:
+                # 判断是不是首行
+                self.dev.shell("input tap " + line.split(" ")[0] + " " + line.split(" ")[1] + "")
+
+
 
     def onFileChoose(self):
         cwd = os.getcwd()
@@ -156,6 +186,12 @@ class MyApp(QtWidgets.QDialog):
         x_, y_ = self.get_screen_resolution()
         x_val = str(pos.x() * x_ / pixmapRect.width())
         y_val = str(pos.y() * y_ / pixmapRect.height())
+        global is_save_step
+        if is_save_step:
+            file_path="D:\WorkDemo\My_Work\device_tool_git\Android\script_file\step.txt"
+            with open(file_path,'a') as  f_output:
+                f_output.write(str(x_val)+" "+str(y_val)+" "+str(time.time()))
+                f_output.write('\n')
         self.dev.shell("input tap " + x_val + " " + y_val + "")
 
     def get_screen_resolution(self):
