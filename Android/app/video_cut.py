@@ -7,12 +7,7 @@ from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, QLabel, QHBoxLayo
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 
-
-def get_sys_info():
-    if sys.platform.startswith('win'):
-        return "windows"
-    else:
-        return "linux"
+from Base.common import get_sys_info
 
 
 class Video_Cut():

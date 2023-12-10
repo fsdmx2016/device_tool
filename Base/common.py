@@ -7,6 +7,7 @@
 @Desc    :
 """
 import subprocess
+import sys
 
 
 def raw_shell(command: str):
@@ -23,3 +24,10 @@ def run_adb_command( command):
     except subprocess.CalledProcessError as e:
         print("运行ADB命令时出错:", e)
         return None
+
+
+def get_sys_info():
+    if sys.platform.startswith('win'):
+        return "windows"
+    else:
+        return "linux"
