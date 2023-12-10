@@ -15,8 +15,8 @@ class AppRetry:
         is_save_step = True
 
     def run_script_(self, script_name):
-        script_name = os.getcwd() + "\\script_file\\" + script_name + ".txt"
-        file_path = "D:\WorkDemo\My_Work\device_tool_git\Android\script_file\step.txt"
+        file_path =  os.path.join(os.path.dirname(os.path.abspath(os.getcwd())), "script_file", "circulate",script_name+".txt")
+        # file_path = "D:\WorkDemo\My_Work\device_tool_git\Android\script_file\step.txt"
         with open(file_path, 'r') as f_input:
             for line in f_input:
                 # 判断是不是首行
@@ -32,13 +32,13 @@ class AppRetry:
                     self.dev.shell("input tap " + line.split(" ")[0] + " " + line.split(" ")[1] + "")
 
     def save_script_(self, script_name, layout):
-        temporary_path = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())), "script_file", "temporary")
-        circulate_path = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())), "script_file", "circulate")
+        temporary_path = os.path.join(os.getcwd(), "script_file", "temporary")
+        circulate_path = os.path.join(os.getcwd(), "script_file", "circulate")
         # 重命名文件
         old_name = os.path.join(temporary_path, self.get_temporary_path(temporary_path))
         new_name = os.path.join(temporary_path, script_name + ".txt")
         os.rename(old_name, new_name)
-        time.sleep(1)
+        time.sleep(0.5)
         # 移动文件
         destination = os.path.join(circulate_path, script_name + ".txt")
         shutil.move(new_name, destination)
@@ -47,11 +47,7 @@ class AppRetry:
         item = QListWidgetItem()
         layout.addItem(item)
         layout.setItemWidget(item, check_box)
-        # 添加提示
-        messageBox = QMessageBox(QMessageBox.Information, "提示信息", "保存成功！", QMessageBox.Ok, self)
-        # QMessageBox组件设置
-        messageBox.button(QMessageBox.Ok).setText("确定")  # 为按钮设置文本
-        messageBox.exec()
+
 
     def get_temporary_path(self, file_path):
         files = os.listdir(file_path)

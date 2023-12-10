@@ -4,13 +4,13 @@ import time
 from PyQt5 import QtWidgets, uic, QtCore
 import sys
 
-from PyQt5.QtCore import QTimer, pyqtSignal, Qt, QThread
-from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel
+from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import QApplication, QFileDialog,QCheckBox, QListWidgetItem
 from PyQt5.QtGui import QPixmap, QImage
 from airtest.core.android import Android
 from Android.app import app_start, video_cut, base, app_performance, app_info, app_network, app_retry
-from Android.app.app_log import LogThread, AppLogMethod
-from Base.common import run_adb_command
+from Android.app.app_log import LogThread
+
 
 is_save_step = False
 
@@ -18,7 +18,7 @@ is_save_step = False
 class MyApp(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
-        ui_file_path = os.path.dirname(os.path.abspath(os.getcwd())) + "/ui/android2.ui"
+        ui_file_path = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())), "ui", "android2.ui")
         uic.loadUi(ui_file_path, self)
         self.dev = Android()
         # 获取基础设备相关信息
@@ -33,6 +33,7 @@ class MyApp(QtWidgets.QDialog):
         self.init_ui_log()
         self.init_ui_network()
         self.init_retry_script()
+        self.init_script_list()
         # self.init_ui_auto_test()
         # 安卓投屏相关服务
         time.sleep(3)
@@ -44,6 +45,15 @@ class MyApp(QtWidgets.QDialog):
         self.timer.start(300)
         # 按键注册
         self.phone_click()
+
+    def init_script_list(self):
+        file_path = os.path.join(os.getcwd(), "script_file", "circulate")
+        files = os.listdir(file_path)
+        for file in files:
+            check_box = QCheckBox(file.split(".")[0])
+            item = QListWidgetItem()
+            self.retry_script_list.addItem(item)
+            self.retry_script_list.setItemWidget(item, check_box)
 
     def init_ui_base(self):
         base_ = base.BaseMethod(self.dev)
@@ -108,20 +118,24 @@ class MyApp(QtWidgets.QDialog):
         # 点击录制循环脚本的时候，开启记忆
         self.retry_script_cycle.clicked.connect(lambda: self.start_retry_script(self.retry_script_cycle))
         # 脚本保存
-        self.retry_script_save.clicked.connect(lambda:retry_step.save_script_(self.retry_script_name.currentText(),self.retry_script_list))
+        self.retry_script_save.clicked.connect(
+            lambda: retry_step.save_script_(self.retry_script_name.text(), self.retry_script_list))
 
         # 执行脚本
-        self.start_script_auto.clicked.connect(lambda:retry_step.run_script_(self.retry_script_name.currentText()))
+        self.start_script_auto.clicked.connect(lambda: retry_step.run_script_(self.retry_script_name.currentText()))
 
     def start_retry_script(self, btn):
         global is_save_step
         if btn.text() != "停止录制":
+            file_path = os.path.join(os.getcwd(), "script_file", "temporary", "temporary.txt")
+            # 先清空文件
+            with open(file_path, 'w') as file:
+                file.truncate(0)
             is_save_step = True
             btn.setText("停止录制")
         else:
             is_save_step = False
             btn.setText("录制循环脚本")
-
 
     def onFileChoose(self):
         cwd = os.getcwd()
@@ -184,14 +198,15 @@ class MyApp(QtWidgets.QDialog):
         y_val = str(pos.y() * y_ / pixmapRect.height())
         global is_save_step
         if is_save_step:
-            file_path=os.path.join(os.getcwd(), "script_file", "temporary")+"\\"+str(time.time()).split('.')[0]+".txt"
+            file_path = os.path.join(os.getcwd(), "script_file", "temporary", "temporary.txt")
             with open(file_path, 'a') as f_output:
-                if len(f_output.read()) > 0:
-                    f_output.write(str(x_val) + " " + str(y_val) + " " + str(time.time()))
+                file_size = os.path.getsize(file_path)
+                if file_size == 0:
+                    f_output.write("first_line " + str(x_val) + " " + str(y_val) + " " + str(time.time()))
                     f_output.write('\n')
                 else:
                     # 如果是个新文件，写入第一行
-                    f_output.write("first_line " + str(x_val) + " " + str(y_val) + " " + str(time.time()))
+                    f_output.write(str(x_val) + " " + str(y_val) + " " + str(time.time()))
                     f_output.write('\n')
         self.dev.shell("input tap " + x_val + " " + y_val + "")
 

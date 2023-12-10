@@ -51,43 +51,125 @@
      </property>
      <layout class="QHBoxLayout" name="mems_layout"/>
     </widget>
-    <widget class="QPushButton" name="start_mem_test">
+    <widget class="QPushButton" name="start_script_auto">
      <property name="geometry">
       <rect>
-       <x>50</x>
-       <y>180</y>
-       <width>171</width>
-       <height>51</height>
+       <x>140</x>
+       <y>190</y>
+       <width>111</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="text">
       <string>脚本重放</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="start_mem_test_2">
+    <widget class="QPushButton" name="retry_script_first">
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>150</y>
+       <y>140</y>
        <width>121</width>
-       <height>21</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>录制前/后置脚本</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="start_mem_test_3">
+    <widget class="QPushButton" name="retry_script_cycle">
      <property name="geometry">
       <rect>
-       <x>140</x>
-       <y>150</y>
+       <x>130</x>
+       <y>140</y>
        <width>121</width>
-       <height>21</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>录制循环脚本</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="retry_script_save">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>100</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>保存录制脚本</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="delete_auto_script">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>190</y>
+       <width>121</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>删除脚本</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_15">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>250</y>
+       <width>81</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>脚本名称</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_16">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>240</y>
+       <width>81</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>播放次数</string>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="retry_script_list">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>311</y>
+       <width>271</width>
+       <height>291</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="retry_script_name">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>270</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="retry_script_time">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>270</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
      </property>
     </widget>
    </widget>
