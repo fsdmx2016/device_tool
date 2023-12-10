@@ -2,7 +2,7 @@ import os
 import time
 import shutil
 
-from PyQt5.QtWidgets import QCheckBox, QListWidgetItem
+from PyQt5.QtWidgets import QCheckBox, QListWidgetItem, QMessageBox
 
 
 class AppRetry:
@@ -47,6 +47,11 @@ class AppRetry:
         item = QListWidgetItem()
         layout.addItem(item)
         layout.setItemWidget(item, check_box)
+        # 添加提示
+        messageBox = QMessageBox(QMessageBox.Information, "提示信息", "保存成功！", QMessageBox.Ok, self)
+        # QMessageBox组件设置
+        messageBox.button(QMessageBox.Ok).setText("确定")  # 为按钮设置文本
+        messageBox.exec()
 
     def get_temporary_path(self, file_path):
         files = os.listdir(file_path)
@@ -54,7 +59,3 @@ class AppRetry:
             file_path = os.path.join(file_path, file)
             break
         return file_path
-
-
-if __name__ == '__main__':
-    save_script_("21344")

@@ -109,6 +109,7 @@ class MyApp(QtWidgets.QDialog):
         self.retry_script_cycle.clicked.connect(lambda: self.start_retry_script(self.retry_script_cycle))
         # 脚本保存
         self.retry_script_save.clicked.connect(lambda:retry_step.save_script_(self.retry_script_name.currentText(),self.retry_script_list))
+
         # 执行脚本
         self.start_script_auto.clicked.connect(lambda:retry_step.run_script_(self.retry_script_name.currentText()))
 
