@@ -183,7 +183,7 @@ class MyApp(QtWidgets.QDialog):
         y_val = str(pos.y() * y_ / pixmapRect.height())
         global is_save_step
         if is_save_step:
-            file_path = "D:\WorkDemo\My_Work\device_tool_git\Android\script_file\step.txt"
+            file_path=os.path.join(os.getcwd(), "script_file", "temporary")+"\\"+str(time.time()).split('.')[0]+".txt"
             with open(file_path, 'a') as f_output:
                 if len(f_output.read()) > 0:
                     f_output.write(str(x_val) + " " + str(y_val) + " " + str(time.time()))
