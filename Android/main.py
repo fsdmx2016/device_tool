@@ -104,12 +104,15 @@ class MyApp(QtWidgets.QDialog):
             lambda: app_.get_mem_info(self.mem_layout, self.device_app_list.currentText()))
 
     def init_retry_script(self):
-        # retry_step = app_retry.AppRetry(self.dev)
+        retry_step = app_retry.AppRetry(self.dev)
         # 点击录制循环脚本的时候，开启记忆
-        self.retry_script_cycle.clicked.connect(lambda :self.start_retry_script(self.retry_script_cycle))
-        self.start_script_auto.clicked.connect(self.start_script_auto_step)
+        self.retry_script_cycle.clicked.connect(lambda: self.start_retry_script(self.retry_script_cycle))
+        # 脚本保存
+        self.retry_script_save.clicked.connect(lambda:retry_step.save_script_(self.retry_script_name.currentText(),self.retry_script_list))
+        # 执行脚本
+        self.start_script_auto.clicked.connect(lambda:retry_step.run_script_(self.retry_script_name.currentText()))
 
-    def start_retry_script(self,btn):
+    def start_retry_script(self, btn):
         global is_save_step
         if btn.text() != "停止录制":
             is_save_step = True
@@ -117,14 +120,6 @@ class MyApp(QtWidgets.QDialog):
         else:
             is_save_step = False
             btn.setText("录制循环脚本")
-
-    def start_script_auto_step(self):
-        file_path = "D:\WorkDemo\My_Work\device_tool_git\Android\script_file\step.txt"
-        with open(file_path, 'r') as f_input:
-            for line in f_input:
-                # 判断是不是首行
-                self.dev.shell("input tap " + line.split(" ")[0] + " " + line.split(" ")[1] + "")
-
 
 
     def onFileChoose(self):
@@ -188,10 +183,15 @@ class MyApp(QtWidgets.QDialog):
         y_val = str(pos.y() * y_ / pixmapRect.height())
         global is_save_step
         if is_save_step:
-            file_path="D:\WorkDemo\My_Work\device_tool_git\Android\script_file\step.txt"
-            with open(file_path,'a') as  f_output:
-                f_output.write(str(x_val)+" "+str(y_val)+" "+str(time.time()))
-                f_output.write('\n')
+            file_path = "D:\WorkDemo\My_Work\device_tool_git\Android\script_file\step.txt"
+            with open(file_path, 'a') as f_output:
+                if len(f_output.read()) > 0:
+                    f_output.write(str(x_val) + " " + str(y_val) + " " + str(time.time()))
+                    f_output.write('\n')
+                else:
+                    # 如果是个新文件，写入第一行
+                    f_output.write("first_line " + str(x_val) + " " + str(y_val) + " " + str(time.time()))
+                    f_output.write('\n')
         self.dev.shell("input tap " + x_val + " " + y_val + "")
 
     def get_screen_resolution(self):
