@@ -1,4 +1,5 @@
 import os
+import threading
 import time
 import shutil
 
@@ -10,13 +11,9 @@ class AppRetry:
         super().__init__()
         self.dev = dev
 
-    # 录制循环脚本
-    def start_save_circulate_script(self, is_save_step):
-        is_save_step = True
 
-    def run_script_(self, script_name):
+    def run_script_(self, script_name,cpu_layout,mem_layout):
         file_path =  os.path.join(os.path.dirname(os.path.abspath(os.getcwd())), "script_file", "circulate",script_name+".txt")
-        # file_path = "D:\WorkDemo\My_Work\device_tool_git\Android\script_file\step.txt"
         with open(file_path, 'r') as f_input:
             for line in f_input:
                 # 判断是不是首行
@@ -30,7 +27,14 @@ class AppRetry:
                     time.sleep(float(line.split(' ')[2]) - float(latest_time))
                     first_time = float(line.split(' ')[2])
                     self.dev.shell("input tap " + line.split(" ")[0] + " " + line.split(" ")[1] + "")
+    # 执行脚本
+    thread1 = threading.Thread(target=task1)
+    thread2 = threading.Thread(target=task2)
+    thread1.start()
+    thread2.start()
+    # 展示cpu曲线
 
+    # 展示mem曲线
     def save_script_(self, script_name, layout):
         temporary_path = os.path.join(os.getcwd(), "script_file", "temporary")
         circulate_path = os.path.join(os.getcwd(), "script_file", "circulate")
