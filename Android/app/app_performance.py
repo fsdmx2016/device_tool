@@ -12,26 +12,10 @@ cpu_X = []
 cpu_Y = []
 
 class Appa_Performance:
-    def __init__(self, dev, fps_layout, cpu_layout, mem_layout):
+    def __init__(self, dev, cpu_layout, mem_layout):
         self.dev = dev
-        self.fps_layout = fps_layout
         self.cpu_layout = cpu_layout
         self.mem_layout = mem_layout
-
-    def start_test(self, package_name):
-        # # data_queue = Queue()  # 创建队列对象
-        #
-        # cpu_thread = threading.Thread(target=self.make_cpu_canvas, args=(self.cpu_layout, package_name, ))
-        # mem_thread = threading.Thread(target=self.make_mem_canvas, args=(self.mem_layout, package_name, ))
-        #
-        # cpu_thread.start()
-        # mem_thread.start()
-        # # 等待线程执行完成
-        #
-        # cpu_thread.join()
-        # mem_thread.join()
-        self.make_cpu_canvas(self.cpu_layout, package_name)
-
     def get_sys_info(self):
         if sys.platform.startswith('win'):
             return "windows"
