@@ -28,13 +28,15 @@ class AppRetry:
             item = retry_script_list.item(i)
             check_box = retry_script_list.itemWidget(item)
             if check_box.isChecked():
-                return item.text()
+                return check_box.text()
+        return None
 
     def run_script_(self,retry_script_list):
         script_name=self.get_select_script(retry_script_list)
         file_path = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())), "script_file", "circulate",
-                                 )+script_name + ".txt"
-        with open(file_path, 'r') as f_input:
+                                 )
+        script_path=os.path.join(file_path,script_name+".txt")
+        with open(script_path, 'r') as f_input:
             for line in f_input:
                 # 判断是不是首行
                 first_time = 1
