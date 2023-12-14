@@ -13,17 +13,17 @@ class AppRetry:
         super().__init__()
         self.dev = dev
 
-    def run_script_by_name(self, retry_script_list, cpu_layout, mem_layout):
-        run_script_thread=threading.Thread(target=self.run_script_(retry_script_list))
-        app_performance=Appa_Performance(self.dev,cpu_layout,mem_layout)
+    def run_script_by_name(self, retry_script_list, retry_num, cpu_layout, mem_layout):
+        run_script_thread = threading.Thread(target=self.run_script_(retry_script_list, retry_num))
+        app_performance = Appa_Performance(self.dev, cpu_layout, mem_layout)
         package_name = str(self.dev.get_top_activity_name()).split("/")[0]
-        thread1 = threading.Thread(target=app_performance.make_cpu_canvas(cpu_layout,package_name))
-        thread2 = threading.Thread(target=app_performance.make_mem_canvas(cpu_layout,package_name))
+        thread1 = threading.Thread(target=app_performance.make_cpu_canvas(cpu_layout, package_name))
+        thread2 = threading.Thread(target=app_performance.make_mem_canvas(cpu_layout, package_name))
         run_script_thread.start()
         thread1.start()
         thread2.start()
 
-    def get_select_script(self,retry_script_list):
+    def get_select_script(self, retry_script_list):
         for i in range(retry_script_list.count()):
             item = retry_script_list.item(i)
             check_box = retry_script_list.itemWidget(item)
@@ -31,24 +31,25 @@ class AppRetry:
                 return check_box.text()
         return None
 
-    def run_script_(self,retry_script_list):
-        script_name=self.get_select_script(retry_script_list)
+    def run_script_(self, retry_script_list, retry_num):
+        script_name = self.get_select_script(retry_script_list)
         file_path = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())), "script_file", "circulate",
                                  )
-        script_path=os.path.join(file_path,script_name+".txt")
+        script_path = os.path.join(file_path, script_name + ".txt")
         with open(script_path, 'r') as f_input:
-            for line in f_input:
-                # 判断是不是首行
-                first_time = 1
-                if line.__contains__("first_line"):
-                    first_line_time = line.split(" ")[3]
-                    latest_time = first_line_time
-                    self.dev.shell("input tap " + line.split(" ")[1] + " " + line.split(" ")[2] + "")
-                else:
-                    # 等待时间为2次click的间隔
-                    time.sleep(float(line.split(' ')[2]) - float(latest_time))
-                    first_time = float(line.split(' ')[2])
-                    self.dev.shell("input tap " + line.split(" ")[0] + " " + line.split(" ")[1] + "")
+            for i in range(retry_num):
+                for line in f_input:
+                    # 判断是不是首行
+                    first_time = 1
+                    if line.__contains__("first_line"):
+                        first_line_time = line.split(" ")[3]
+                        latest_time = first_line_time
+                        self.dev.shell("input tap " + line.split(" ")[1] + " " + line.split(" ")[2] + "")
+                    else:
+                        # 等待时间为2次click的间隔
+                        time.sleep(float(line.split(' ')[2]) - float(latest_time))
+                        first_time = float(line.split(' ')[2])
+                        self.dev.shell("input tap " + line.split(" ")[0] + " " + line.split(" ")[1] + "")
 
     def save_script_(self, script_name, layout):
         temporary_path = os.path.join(os.getcwd(), "script_file", "temporary")
