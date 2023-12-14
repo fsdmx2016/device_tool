@@ -1,14 +1,12 @@
 import threading
 
 def task1():
-    print("Task 1 started")
-    # 执行任务1的代码
-    print("Task 1 completed")
+    while True:
+        print("111")
 
 def task2():
-    print("Task 2 started")
-    # 执行任务2的代码
-    print("Task 2 completed")
+    while True:
+        print("22222")
 
 if __name__ == "__main__":
     # 创建并启动线程

@@ -13,8 +13,8 @@ class AppRetry:
         super().__init__()
         self.dev = dev
 
-    def run_script_by_name(self, script_name, cpu_layout, mem_layout):
-        run_script_thread=threading.Thread(target=self.run_script_(script_name))
+    def run_script_by_name(self, retry_script_list, cpu_layout, mem_layout):
+        run_script_thread=threading.Thread(target=self.run_script_(retry_script_list))
         app_performance=Appa_Performance(self.dev,cpu_layout,mem_layout)
         package_name = str(self.dev.get_top_activity_name()).split("/")[0]
         thread1 = threading.Thread(target=app_performance.make_cpu_canvas(cpu_layout,package_name))
@@ -23,10 +23,17 @@ class AppRetry:
         thread1.start()
         thread2.start()
 
+    def get_select_script(self,retry_script_list):
+        for i in range(retry_script_list.count()):
+            item = retry_script_list.item(i)
+            check_box = retry_script_list.itemWidget(item)
+            if check_box.isChecked():
+                return item.text()
 
-    def run_script_(self, script_name):
+    def run_script_(self,retry_script_list):
+        script_name=self.get_select_script(retry_script_list)
         file_path = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())), "script_file", "circulate",
-                                 script_name + ".txt")
+                                 )+script_name + ".txt"
         with open(file_path, 'r') as f_input:
             for line in f_input:
                 # 判断是不是首行
