@@ -36,10 +36,9 @@ class AppRetry:
                 retry_script_list.takeItem(retry_script_list.row(item))
                 delete_count = delete_count + 1
         if delete_count == 0:
-            msg_box = QMessageBox()
-            msg_box.setWindowTitle("提示")
-            msg_box.setText("请先选择要删除的脚本")
-            msg_box.setIcon(QMessageBox.Warning)
+            messageBox = QMessageBox(QMessageBox.Information, "提示", "请先选择要删除的脚本")
+            messageBox.button(QMessageBox.Ok)
+            messageBox.exec()
 
     def get_select_script(self, retry_script_list):
         for i in range(retry_script_list.count()):
@@ -47,10 +46,9 @@ class AppRetry:
             check_box = retry_script_list.itemWidget(item)
             if check_box.isChecked():
                 return check_box.text()
-        msg_box = QMessageBox()
-        msg_box.setWindowTitle("提示")
-        msg_box.setText("请先选择要执行的脚本")
-        msg_box.setIcon(QMessageBox.Warning)
+        messageBox = QMessageBox(QMessageBox.Information, "提示", "请先选择要执行的脚本")
+        messageBox.button(QMessageBox.Ok)
+        messageBox.exec()
 
     def run_script_(self, retry_script_list, retry_num):
         script_name = self.get_select_script(retry_script_list)
