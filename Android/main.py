@@ -87,7 +87,7 @@ class MyApp(QtWidgets.QDialog):
     # 加载启动时间页面的UI文件
     def init_ui_start_time(self):
         app_ = app_start.StartMethod(self.dev)
-
+        
         self.start_get_current_activity.clicked.connect(
             lambda: self.start_input_activity.setText(app_.get_top_activity()))
         self.start_get_start_activity.clicked.connect(
@@ -106,7 +106,6 @@ class MyApp(QtWidgets.QDialog):
             lambda: app_.make_mem_canvas(self.mem_layout, self.device_app_list.currentText()))
         self.performance_start_cpu_test.clicked.connect(
             lambda: app_.make_cpu_canvas(self.cpu_layout, self.device_app_list.currentText()))
-
     # 加载RAM页面的UI文件
     def init_ui_auto_test(self):
         app_ = app_info.AppInfoMethod(self.dev, self.mem_layout, )

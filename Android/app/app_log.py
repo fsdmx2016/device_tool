@@ -38,15 +38,17 @@ class LogThread(QThread):
     def get_app_memory(self):
         package_name = str(self.dev.get_top_activity_name()).split("/")[0]
         if LogThread.get_sys_info(self) == "windows":
-            command = f"adb logcat -e {package_name}"
+            command ="adb logcat"
         else:
             command = f"adb logcat -e {package_name}"
-        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process=self.dev.shell("logcat")
+        # process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         while True:
-            line = process.stdout.readline().decode().strip()
-            if not line:
+            output = process.stdout.readline().decode('utf-8').strip()
+            if output == '' and process.poll() is not None:
                 break
-            return line
+            return output
 
     def update_text_edit(self, data):
         self.log_label.append(str(data))

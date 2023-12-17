@@ -1,5 +1,6 @@
 import os
 import sys
+import threading
 
 from PyQt5.QtWidgets import QSpacerItem
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -11,11 +12,13 @@ mem_Y = []
 cpu_X = []
 cpu_Y = []
 
+
 class Appa_Performance:
     def __init__(self, dev, cpu_layout, mem_layout):
         self.dev = dev
         self.cpu_layout = cpu_layout
         self.mem_layout = mem_layout
+
     def get_sys_info(self):
         if sys.platform.startswith('win'):
             return "windows"
@@ -57,6 +60,7 @@ class Appa_Performance:
                     memory_info = line.split()[1]
                     return int(int(memory_info) / 1024)
             return None
+
 
     def make_mem_canvas(self, layout, package_name):
         self.deleteAll(layout)
