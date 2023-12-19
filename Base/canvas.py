@@ -1,40 +1,72 @@
-import os
-import time
+import copy
+import datetime
 
-from Base import common
-import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QSpacerItem
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-import random
+from typing import Optional
 
+from Base import common
+mem_X = []
+mem_Y = []
+cpu_x = []
+cpu_y = []
+class AppCanvas:
 
-class AppInfoMethod:
-    def start_(self, layout):
-        # 创建一个Matplotlib图形对象
+    # 参数：布局、包名、方法名、title值
+    def make_canvas(self, layout, title_val, package_name: Optional[str] = None):
+        # 先清空布局内容
+        self.deleteAll(layout)
         self.figure = Figure()
-        # 创建一个绘图区域对象
         self.canvas = FigureCanvas(self.figure)
-        # 创建一个垂直布局
         layout.addWidget(self.canvas)
-        # # 创建一个主窗口小部件，并将布局设置为垂直布局
-        # widget = QWidget()
-        # widget.setLayout(layout)
-        # self.setCentralWidget(widget)
-        # 启动定时器以更新图形
+        self.title_val = title_val
+        self.package_name = package_name
         self.timer = self.canvas.new_timer(interval=1000)  # 每秒更新一次
-        self.timer.add_callback(self.update_plot)
+        self.timer.add_callback(self.update_plot_cpu)
         self.timer.start()
 
-    def update_plot(self):
-        # 清除图形
-        self.figure.clear()
-        # 创建一个绘图子区域对象
-        ax = self.figure.add_subplot(111)
-        # 模拟数据更新
-        x = range(10)
-        y = [random.randint(0, 10) for _ in range(10)]
-        # 绘制折线图
-        ax.plot(x, y)
-        # 刷新图形
-        self.canvas.draw()
+    def deleteAll(self, thisLayout):
+        item_list = list(range(thisLayout.count()))
+        item_list.reverse()  # 倒序删除，避免影响布局顺序
+
+        for i in item_list:
+            item = thisLayout.itemAt(i)
+            if item is not None:
+                if item.widget() is not None:
+                    item.widget().deleteLater()
+                elif isinstance(item, QSpacerItem):
+                    thisLayout.removeItem(item)
+                else:
+                    self.deleteAll(item.layout())
+                thisLayout.removeItem(item)
+
+    def update_plot_cpu(self, ):
+        if self.title_val == "mem":
+            global mem_X, mem_Y
+            self.figure.clear()
+            ax = self.figure.add_subplot(111)
+            current_time = datetime.datetime.now().strftime("%H:%M:%S")
+            mem_X.append(current_time)
+            mem_Y.append(common.get_app_memory(self.package_name))
+            if len(mem_X) > 5:
+                mem_X = mem_X[-5:]
+                mem_Y = mem_Y[-5:]
+            ax.set_xlabel('Time')
+            ax.set_ylabel('Memory')
+            ax.plot(mem_X, mem_Y)
+            self.canvas.draw()
+        elif self.title_val == "cpu":
+            global cpu_x, cpu_y
+            self.figure.clear()
+            ax = self.figure.add_subplot(111)
+            current_time = datetime.datetime.now().strftime("%H:%M:%S")
+            cpu_x.append(current_time)
+            cpu_y.append(common.get_app_memory(self.dev,self.package_name))
+            if len(cpu_x) > 5:
+                cpu_x = cpu_x[-5:]
+                cpu_y = cpu_y[-5:]
+            ax.set_xlabel('Time')
+            ax.set_ylabel('Memory')
+            ax.plot(cpu_x, cpu_y)
+            self.canvas.draw()

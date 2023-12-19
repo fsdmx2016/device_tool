@@ -17,7 +17,7 @@ def raw_shell(command: str):
 
 
 # 运行ADB命令
-def run_adb_command( command):
+def run_adb_command(command):
     try:
         output = subprocess.check_output(command, shell=True)
         return output.decode("utf-8")
@@ -31,3 +31,16 @@ def get_sys_info():
         return "windows"
     else:
         return "linux"
+
+
+# 获取应用的内存信息
+def get_app_memory(package_name: str):
+    output = run_adb_command("adb shell dumpsys meminfo " + package_name + "")
+    if output:
+        # 解析输出并提取内存信息
+        lines = output.splitlines()
+        for line in lines:
+            if line.__contains__("TOTAL"):
+                memory_info = line.split()[1]
+                return int(int(memory_info) / 1024)
+        return None

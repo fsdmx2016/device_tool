@@ -5,12 +5,11 @@ from PyQt5 import QtWidgets, uic, QtCore
 import sys
 
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QApplication, QFileDialog,QCheckBox, QListWidgetItem
+from PyQt5.QtWidgets import QApplication, QFileDialog, QCheckBox, QListWidgetItem
 from PyQt5.QtGui import QPixmap, QImage
 from airtest.core.android import Android
 from Android.app import app_start, video_cut, base, app_performance, app_info, app_network, app_retry
 from Android.app.app_log import LogThread
-
 
 is_save_step = False
 
@@ -18,21 +17,26 @@ is_save_step = False
 class MyApp(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
+        # 加载UI文件
         ui_file_path = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())), "ui", "android2.ui")
         uic.loadUi(ui_file_path, self)
+        # 初始化安卓设备，默认选择一个设备，如果不存在则报错
         self.dev = Android()
         # 获取基础设备相关信息
         self.init_ui_base()
         # app_启动时间
         self.init_ui_start_time()
-        # 视频相关初始化
-        self.init_ui_lp()
-        # 性能相关
+        # 视频分帧
+        self.init_ui_video()
+        # 性能测试
         self.init_ui_performance()
-        # log日志相关
+        # log日志
         self.init_ui_log()
+        # 网络流量
         self.init_ui_network()
+        # 自动化测试
         self.init_retry_script()
+        # 加载脚本列表
         self.init_script_list()
         # self.init_ui_auto_test()
         # 安卓投屏相关服务
@@ -47,6 +51,7 @@ class MyApp(QtWidgets.QDialog):
         self.phone_click()
 
     def init_script_list(self):
+        # 循环遍历，获取脚本列表
         file_path = os.path.join(os.getcwd(), "script_file", "circulate")
         files = os.listdir(file_path)
         for file in files:
@@ -71,14 +76,12 @@ class MyApp(QtWidgets.QDialog):
         self.phone_back.clicked.connect(lambda: self.dev.keyevent("4"))
 
     def init_ui_log(self):
-        # 开启日志相关
         self.start_get_Log.clicked.connect(self.start_thread)
         self.worker_thread = LogThread(self.dev, self.show_log, self.device_app_list.currentText())
         self.worker_thread.update_signal.connect(self.update_line_edit)
         self.stop_get_Log.clicked.connect(self.stop_thread)
 
-    # 视频相关
-    def init_ui_lp(self):
+    def init_ui_video(self):
         app_ = video_cut.Video_Cut()
         self.lp_choice_video.clicked.connect(self.onFileChoose)
         self.lp_start_clive_video.clicked.connect(
@@ -87,7 +90,7 @@ class MyApp(QtWidgets.QDialog):
     # 加载启动时间页面的UI文件
     def init_ui_start_time(self):
         app_ = app_start.StartMethod(self.dev)
-        
+
         self.start_get_current_activity.clicked.connect(
             lambda: self.start_input_activity.setText(app_.get_top_activity()))
         self.start_get_start_activity.clicked.connect(
@@ -104,8 +107,14 @@ class MyApp(QtWidgets.QDialog):
         app_ = app_performance.Appa_Performance(self.dev, self.cpu_layout, self.mem_layout)
         self.performance_start_mem_test.clicked.connect(
             lambda: app_.make_mem_canvas(self.mem_layout, self.device_app_list.currentText()))
+        # from Base import canvas
+        # canvas = canvas.AppCanvas()
+        # self.performance_start_cpu_test.clicked.connect(
+        #     lambda: canvas.make_canvas(self.cpu_layout,
+        #                                "mem", app_.get_app_memory(self.device_app_list.currentText())))
         self.performance_start_cpu_test.clicked.connect(
             lambda: app_.make_cpu_canvas(self.cpu_layout, self.device_app_list.currentText()))
+
     # 加载RAM页面的UI文件
     def init_ui_auto_test(self):
         app_ = app_info.AppInfoMethod(self.dev, self.mem_layout, )
@@ -120,7 +129,9 @@ class MyApp(QtWidgets.QDialog):
         self.retry_script_save.clicked.connect(
             lambda: retry_step.save_script_(self.retry_script_name.text(), self.retry_script_list))
         # 执行脚本
-        self.start_script_auto.clicked.connect(lambda: retry_step.run_script_by_name(self.retry_script_list,self.retry_script_time.text(),self.retry_cpu_layout,self.retry_mem_layout))
+        self.start_script_auto.clicked.connect(
+            lambda: retry_step.run_script_by_name(self.retry_script_list, self.retry_script_time.text(),
+                                                  self.retry_cpu_layout, self.retry_mem_layout))
         # 删除脚本
         self.delete_auto_script.clicked.connect(lambda: retry_step.delete_script(self.retry_script_list))
 
