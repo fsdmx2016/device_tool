@@ -53,16 +53,23 @@ class NetworkMonitor:
         self.dev = dev
         self.network_type = network_type
 
-    def make_network_canvas(self, layout, package_name):
-        self.pid = self.get_PID(package_name=package_name)
-        self.deleteAll(layout)
-        self.figure = Figure()
-        self.canvas = FigureCanvas(self.figure)
-        layout.addWidget(self.canvas)
-        self.package_name = package_name
-        self.timer = self.canvas.new_timer(interval=1000)  # 每秒更新一次
-        self.timer.add_callback(self.update_plot_network_up)
-        self.timer.start()
+    def make_network_canvas(self, btn, layout1, layout2, package_name):
+        if btn.text() == "开始测试":
+            self.pid = self.get_PID(package_name=package_name)
+            self.deleteAll(layout1)
+            self.deleteAll(layout2)
+            btn.setText("停止测试")
+            self.figure = Figure()
+            self.canvas = FigureCanvas(self.figure)
+            layout1.addWidget(self.canvas)
+            layout2.addWidget(self.canvas)
+            self.package_name = package_name
+            self.timer = self.canvas.new_timer(interval=1000)  # 每秒更新一次
+            self.timer.add_callback(self.update_plot_network_up)
+            self.timer.start()
+        else:
+            self.timer.stop()
+            btn.setText("开始测试")
 
     def deleteAll(self, thisLayout):
         item_list = list(range(thisLayout.count()))
@@ -124,5 +131,6 @@ class NetworkMonitor:
         network_info2 = ParseNetworkInfo(package_name, network_info2, network_type).network_data
         up_net = network_info2[1] - network_info[1]
         do_net = network_info2[0] - network_info[0]
-        print("获取到的network信息是：{},{}".format(network_info2[0] - network_info[0], network_info2[1] - network_info[1]))
+        print("获取到的network信息是：{},{}".format(network_info2[0] - network_info[0],
+                                                   network_info2[1] - network_info[1]))
         return do_net, up_net

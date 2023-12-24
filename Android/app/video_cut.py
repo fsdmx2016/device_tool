@@ -1,4 +1,6 @@
+import datetime
 import sys
+from time import sleep
 
 import cv2
 import os
@@ -78,7 +80,7 @@ class Video_Cut():
         scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         scroll_area.setWidget(QWidget())
         # 排序
-        picture_list=sorted(picture_list)
+        picture_list = sorted(picture_list)
         # 在水平布局中添加图片
         for image_path in picture_list:
             image_label = QLabel()
@@ -93,3 +95,26 @@ class Video_Cut():
     def start_covert_video(self, video_file, scroll_areas):
         file_path = Video_Cut.video_cut(self, video_file)
         Video_Cut.show_image(self, file_path, scroll_areas)
+
+    def start_record_video(self, time, dev, btn):
+        current_time = datetime.datetime.now()
+        nyr = str(current_time).split(" ")[0].replace("-", "_")
+        sfm = str(current_time).split(" ")[1].split(".")[0].replace(":", "_")
+        name = nyr + "_" + sfm
+        if btn.text() == "录制视频":
+            # 当按钮时开始录制的时候,
+            # 点击的时候，按钮置为停止录制
+            # 点击停止录制的时候，停止，并保存文件
+            btn.setText("停止录制")
+            dev.start_recording(bit_rate_level=1,max_time=time)
+            dev.stop_recording(output=name+".mp4")
+            btn.setText("录制视频")
+
+
+        # if btn.text() == "停止录制":
+        #     current_time = datetime.datetime.now()
+        #     nyr = str(current_time).split(" ")[0].replace("-", "_")
+        #     sfm = str(current_time).split(" ")[1].split(".")[0].replace(":", "_")
+        #     name=nyr+"_"+sfm
+        #     dev.stop_recording(output=name+".mp4")
+

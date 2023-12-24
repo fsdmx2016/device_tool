@@ -61,26 +61,37 @@ class Appa_Performance:
                     return int(int(memory_info) / 1024)
             return None
 
+    def make_mem_canvas(self, btn, layout, package_name):
+        if btn.text() == "获取内存数据":
+            self.deleteAll(layout)
+            btn.setText("停止测试")
+            self.deleteAll(layout)
+            self.figure = Figure()
+            self.canvas = FigureCanvas(self.figure)
+            layout.addWidget(self.canvas)
+            self.package_name = package_name
+            self.timer = self.canvas.new_timer(interval=1000)  # 每秒更新一次
+            self.timer.add_callback(self.update_plot_mem)
+            self.timer.start()
+        else:
+            self.timer.stop()
+            btn.setText("获取内存数据")
 
-    def make_mem_canvas(self, layout, package_name):
-        self.deleteAll(layout)
-        self.figure = Figure()
-        self.canvas = FigureCanvas(self.figure)
-        layout.addWidget(self.canvas)
-        self.package_name = package_name
-        self.timer = self.canvas.new_timer(interval=1000)  # 每秒更新一次
-        self.timer.add_callback(self.update_plot_mem)
-        self.timer.start()
+    def make_cpu_canvas(self, btn, layout, package_name):
+        if btn.text() == "获取CPU数据":
+            self.deleteAll(layout)
+            btn.setText("停止测试")
 
-    def make_cpu_canvas(self, layout, package_name):
-        self.deleteAll(layout)
-        self.figure = Figure()
-        self.canvas = FigureCanvas(self.figure)
-        layout.addWidget(self.canvas)
-        self.package_name = package_name
-        self.timer = self.canvas.new_timer(interval=1000)  # 每秒更新一次
-        self.timer.add_callback(self.update_plot_cpu)
-        self.timer.start()
+            self.figure = Figure()
+            self.canvas = FigureCanvas(self.figure)
+            layout.addWidget(self.canvas)
+            self.package_name = package_name
+            self.timer = self.canvas.new_timer(interval=1000)  # 每秒更新一次
+            self.timer.add_callback(self.update_plot_cpu)
+            self.timer.start()
+        else:
+            self.timer.stop()
+            btn.setText("获取CPU数据")
 
     def deleteAll(self, thisLayout):
         item_list = list(range(thisLayout.count()))

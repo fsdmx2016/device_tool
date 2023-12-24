@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab_6">
     <attribute name="title">
@@ -193,47 +193,11 @@
     <attribute name="title">
      <string>录屏分帧</string>
     </attribute>
-    <widget class="QPushButton" name="lp_start">
-     <property name="geometry">
-      <rect>
-       <x>320</x>
-       <y>40</y>
-       <width>101</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>录制视频</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="lp_max_time">
-     <property name="geometry">
-      <rect>
-       <x>160</x>
-       <y>40</y>
-       <width>141</width>
-       <height>31</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_6">
-     <property name="geometry">
-      <rect>
-       <x>60</x>
-       <y>50</y>
-       <width>91</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>录制最大时长</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_7">
      <property name="geometry">
       <rect>
-       <x>60</x>
-       <y>100</y>
+       <x>180</x>
+       <y>40</y>
        <width>101</width>
        <height>16</height>
       </rect>
@@ -245,9 +209,9 @@
     <widget class="QLineEdit" name="lp_video_file_path">
      <property name="geometry">
       <rect>
-       <x>160</x>
-       <y>90</y>
-       <width>331</width>
+       <x>80</x>
+       <y>70</y>
+       <width>401</width>
        <height>31</height>
       </rect>
      </property>
@@ -255,8 +219,8 @@
     <widget class="QPushButton" name="lp_choice_video">
      <property name="geometry">
       <rect>
-       <x>520</x>
-       <y>90</y>
+       <x>510</x>
+       <y>70</y>
        <width>101</width>
        <height>31</height>
       </rect>
@@ -304,14 +268,14 @@
     <widget class="QPushButton" name="lp_start_clive_video">
      <property name="geometry">
       <rect>
-       <x>640</x>
-       <y>90</y>
-       <width>101</width>
+       <x>630</x>
+       <y>70</y>
+       <width>121</width>
        <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>开始分割</string>
+      <string>开始分帧</string>
      </property>
     </widget>
    </widget>
