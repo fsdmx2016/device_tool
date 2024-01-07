@@ -1,11 +1,7 @@
-from airtest.core.android import Android
-
-
-def demo():
-    try:
-        Android().get_default_device()
-    except:
-        return False
-
-
-print(demo())
+import time
+num=0
+while True:
+    num=num+1
+    if num==3:
+        print("完成")
+    time.sleep(1)

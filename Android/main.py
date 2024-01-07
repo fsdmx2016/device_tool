@@ -54,6 +54,7 @@ class MyApp(QtWidgets.QDialog):
                 self.timer.start(300)
                 # 按键注册
                 self.phone_click()
+                break
             else:
                 show_conntct_messageBox = QMessageBox(QMessageBox.Information, "提示", "请先连接安卓手机！")
                 show_conntct_messageBox.button(QMessageBox.Ok)
