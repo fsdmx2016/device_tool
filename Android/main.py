@@ -4,9 +4,8 @@ import time
 
 from PyQt5 import QtWidgets, uic, QtCore
 import sys
-
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QApplication, QFileDialog, QCheckBox, QListWidgetItem
+from PyQt5.QtWidgets import QApplication, QFileDialog, QCheckBox, QListWidgetItem,QMessageBox
 from PyQt5.QtGui import QPixmap, QImage
 from airtest.core.android import Android
 from Android.app import app_start, video_cut, base, app_performance, app_info, app_network, app_retry
@@ -22,35 +21,52 @@ class MyApp(QtWidgets.QDialog):
         # 加载UI文件
         ui_file_path = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())), "ui", "android.ui")
         uic.loadUi(ui_file_path, self)
-        # 初始化安卓设备，默认选择一个设备，如果不存在则报错
-        self.dev = Android()
-        # 获取基础设备相关信息
-        self.init_ui_base()
-        # app_启动时间
-        self.init_ui_start_time()
-        # 视频分帧
-        self.init_ui_video()
-        # 性能测试
-        self.init_ui_performance()
-        # log日志
-        self.init_ui_log()
-        # 网络流量
-        self.init_ui_network()
-        # 自动化测试
-        self.init_retry_script()
-        # 加载脚本列表
-        self.init_script_list()
-        # self.init_ui_auto_test()
-        # 安卓投屏相关服务
-        time.sleep(3)
-        self.phone_show.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.phone_show.setScaledContents(True)
-        self.phone_show.installEventFilter(self)
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_screen)
-        self.timer.start(300)
-        # 按键注册
-        self.phone_click()
+        # 对设备的判断
+        while True:
+            is_connect = self.is_connect_device()
+            if is_connect:
+                # 初始化安卓设备，默认选择一个设备，如果不存在则报错
+                self.dev = Android()
+                # 获取基础设备相关信息
+                self.init_ui_base()
+                # app_启动时间
+                self.init_ui_start_time()
+                # 视频分帧
+                self.init_ui_video()
+                # 性能测试
+                self.init_ui_performance()
+                # log日志
+                self.init_ui_log()
+                # 网络流量
+                self.init_ui_network()
+                # 自动化测试
+                self.init_retry_script()
+                # 加载脚本列表
+                self.init_script_list()
+                # self.init_ui_auto_test()
+                # 安卓投屏相关服务
+                time.sleep(3)
+                self.phone_show.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                self.phone_show.setScaledContents(True)
+                self.phone_show.installEventFilter(self)
+                self.timer = QTimer(self)
+                self.timer.timeout.connect(self.update_screen)
+                self.timer.start(300)
+                # 按键注册
+                self.phone_click()
+            else:
+                show_conntct_messageBox = QMessageBox(QMessageBox.Information, "提示", "请先连接安卓手机！")
+                show_conntct_messageBox.button(QMessageBox.Ok)
+                show_conntct_messageBox.exec()
+            time.sleep(2)
+
+    def is_connect_device(self):
+        try:
+            # 判断是否有默认设备
+            Android().get_default_device()
+            return True
+        except:
+            return False
 
     def init_script_list(self):
         # 循环遍历，获取脚本列表
@@ -70,7 +86,8 @@ class MyApp(QtWidgets.QDialog):
     def init_ui_network(self):
         app_ = app_network.NetworkMonitor(self.dev, self.network_select.currentText())
         self.start_network_test.clicked.connect(
-            lambda: app_.make_network_canvas(self.start_network_test,self.network_layout_down,self.network_layout_up, self.device_app_list.currentText()))
+            lambda: app_.make_network_canvas(self.start_network_test, self.network_layout_down, self.network_layout_up,
+                                             self.device_app_list.currentText()))
 
     def phone_click(self):
         self.phone_home.clicked.connect(lambda: self.dev.keyevent("3"))
@@ -108,9 +125,11 @@ class MyApp(QtWidgets.QDialog):
     def init_ui_performance(self):
         app_ = app_performance.Appa_Performance(self.dev, self.cpu_layout, self.mem_layout)
         self.performance_start_mem_test.clicked.connect(
-            lambda: app_.make_mem_canvas(self.performance_start_mem_test,self.mem_layout, self.device_app_list.currentText()))
+            lambda: app_.make_mem_canvas(self.performance_start_mem_test, self.mem_layout,
+                                         self.device_app_list.currentText()))
         self.performance_start_cpu_test.clicked.connect(
-            lambda: app_.make_cpu_canvas(self.performance_start_cpu_test,self.cpu_layout, self.device_app_list.currentText()))
+            lambda: app_.make_cpu_canvas(self.performance_start_cpu_test, self.cpu_layout,
+                                         self.device_app_list.currentText()))
 
     # 加载RAM页面的UI文件
     def init_ui_auto_test(self):

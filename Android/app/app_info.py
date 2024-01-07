@@ -4,7 +4,8 @@ import datetime
 
 mem_X = []
 mem_Y = []
-mem_data=[]
+mem_data = []
+
 
 class AppInfoMethod:
     def __init__(self, dev, label):
@@ -38,7 +39,7 @@ class AppInfoMethod:
         self.timer.start()
 
     def update_plot(self):
-        global mem_X, mem_Y,mem_data
+        global mem_X, mem_Y, mem_data
         self.figure.clear()
         ax = self.figure.add_subplot(111)
         current_time = datetime.datetime.now().strftime("%H:%M:%S")
@@ -46,7 +47,7 @@ class AppInfoMethod:
         mem_X.append(current_time)
         # 绘制折线图.
         mem_Y.append(AppInfoMethod.get_app_memory(self, self.package_name))
-        mem_data.append(AppInfoMethod.get_app_memory(self, self.package_name)-30)
+        mem_data.append(AppInfoMethod.get_app_memory(self, self.package_name) - 30)
         if len(mem_X) > 5:
             mem_X = mem_X[-5:]
             mem_Y = mem_Y[-5:]
