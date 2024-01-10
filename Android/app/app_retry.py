@@ -80,7 +80,7 @@ class AppRetry:
             with open(script_path, 'r') as f_input:
                 for line in f_input:
                     # 判断是不是首行
-                    first_time = 1
+                    first_line = 1
                     if line.__contains__("first_line"):
                         first_line_time = line.split(" ")[3]
                         latest_time = first_line_time
@@ -88,7 +88,7 @@ class AppRetry:
                     else:
                         # 等待时间为2次click的间隔
                         time.sleep(float(line.split(' ')[2]) - float(latest_time))
-                        first_time = float(line.split(' ')[2])
+                        first_line = float(line.split(' ')[2])
                         self.dev.shell("input tap " + line.split(" ")[0] + " " + line.split(" ")[1] + "")
 
     def is_has_save(self, script_name, layout):
