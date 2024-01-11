@@ -19,17 +19,16 @@ class Appa_Performance:
         self.cpu_layout = cpu_layout
         self.mem_layout = mem_layout
 
-    #
-    # def get_sys_info(self):
-    #     if sys.platform.startswith('win'):
-    #         return "windows"
-    #     elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
-    #         return "linux"
+    def get_sys_info(self):
+        if sys.platform.startswith('win'):
+            return "windows"
+        elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+            return "linux"
 
     def get_PID(self, package_name):
         pid = ''
         for app in package_name:
-            if sys.platform.startswith('win'):
+            if self.get_sys_info() == "windows":
                 result = os.popen('adb shell ps | findstr {}'.format(app))
             else:
                 result = os.popen('adb shell ps | grep {}'.format(app))
@@ -86,6 +85,7 @@ class Appa_Performance:
             self.canvas = FigureCanvas(self.figure)
             layout.addWidget(self.canvas)
             self.package_name = package_name
+            self.pid=self.get_PID(package_name)
             self.timer = self.canvas.new_timer(interval=1000)  # 每秒更新一次
             self.timer.add_callback(self.update_plot_cpu)
             self.timer.start()
@@ -114,7 +114,7 @@ class Appa_Performance:
         ax = self.figure.add_subplot(111)
         current_time = datetime.datetime.now().strftime("%H:%M:%S")
         cpu_X.append(current_time)
-        cpu_Y.append(Appa_Performance.get_cpu_info(self, self.get_PID(self.package_name)))
+        cpu_Y.append(Appa_Performance.get_cpu_info(self, self.pid))
         if len(cpu_X) > 5:
             cpu_X = cpu_X[-5:]
             cpu_Y = cpu_Y[-5:]
