@@ -18,17 +18,17 @@ class Appa_Performance:
         self.dev = dev
         self.cpu_layout = cpu_layout
         self.mem_layout = mem_layout
-
-    def get_sys_info(self):
-        if sys.platform.startswith('win'):
-            return "windows"
-        elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
-            return "linux"
+    #
+    # def get_sys_info(self):
+    #     if sys.platform.startswith('win'):
+    #         return "windows"
+    #     elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+    #         return "linux"
 
     def get_PID(self, package_name):
         pid = ''
         for app in package_name:
-            if Appa_Performance.get_sys_info(self) == "windows":
+            if sys.platform.startswith('win'):
                 result = os.popen('adb shell ps | findstr {}'.format(app))
             else:
                 result = os.popen('adb shell ps | grep {}'.format(app))

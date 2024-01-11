@@ -88,9 +88,12 @@ class AppRetry:
                     else:
                         # 等待时间为2次click的间隔
                         time.sleep(float(line.split(' ')[2]) - float(latest_time))
+                        # 为了稳定性，多等待一秒
+                        time.sleep(1)
                         first_line = float(line.split(' ')[2])
                         self.dev.shell("input tap " + line.split(" ")[0] + " " + line.split(" ")[1] + "")
 
+    # 判断脚本名称是否存在
     def is_has_save(self, script_name, layout):
         for i in range(layout.count()):
             item = layout.item(i)
@@ -102,7 +105,13 @@ class AppRetry:
                 return False
         return True
 
+
     def save_script_(self, script_name, layout):
+        """
+        :param script_name:
+        :param layout:
+        :return:
+        """
         is_has_save = self.is_has_save(script_name, layout)
         if is_has_save:
             temporary_path = os.path.join(os.getcwd(), "script_file", "temporary")

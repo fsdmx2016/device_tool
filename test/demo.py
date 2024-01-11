@@ -430,7 +430,7 @@ class PertestInfo:
 
 if __name__ == '__main__':
     deviceName = '10AC4608S6000Z8'  # oppo reno6
-    appName = 'com.mt.mtxx.mtxx'  # ZegoLand
+    appName = 'com.123123# ZegoLand'
 
     # 运行时常
     runTime = 60
@@ -441,7 +441,7 @@ if __name__ == '__main__':
     # phone = PertestInfo(appName, deviceName, PerfDataFile, runTime, 'im.zego.zegoland:zegoland_avatar',
     #                     'im.zego.zegoland:zegoland_unity',
     #                     'im.zego.zegoland')
-    phone = PertestInfo(appName, deviceName, runTime, 'com.mt.mtxx.mtxx')
+    phone = PertestInfo(appName, deviceName, runTime, '123123')
     # app_id = phone.get_PID()
     # for i in range(10):
     #     phone.get_cpuinfo(app_id)
