@@ -87,6 +87,7 @@ class MyApp(QtWidgets.QDialog):
     def init_ui_base(self):
         base_ = base.BaseMethod(self.dev)
         app_list = base_.get_app_list()
+
         self.device_app_list.addItems(app_list)
 
     def init_ui_network(self):

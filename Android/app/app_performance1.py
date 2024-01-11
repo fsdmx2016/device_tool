@@ -18,7 +18,6 @@ class Appa_Performance:
         self.dev = dev
         self.cpu_layout = cpu_layout
         self.mem_layout = mem_layout
-
     #
     # def get_sys_info(self):
     #     if sys.platform.startswith('win'):
@@ -82,6 +81,7 @@ class Appa_Performance:
         if btn.text() == "获取CPU数据":
             self.deleteAll(layout)
             btn.setText("停止测试")
+
             self.figure = Figure()
             self.canvas = FigureCanvas(self.figure)
             layout.addWidget(self.canvas)
@@ -114,7 +114,7 @@ class Appa_Performance:
         ax = self.figure.add_subplot(111)
         current_time = datetime.datetime.now().strftime("%H:%M:%S")
         cpu_X.append(current_time)
-        cpu_Y.append(Appa_Performance.get_cpu_info(self, self.get_PID(self.package_name)))
+        cpu_Y.append(Appa_Performance.get_cpu_info(self, self.package_name))
         if len(cpu_X) > 5:
             cpu_X = cpu_X[-5:]
             cpu_Y = cpu_Y[-5:]
