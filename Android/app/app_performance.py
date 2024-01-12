@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 import threading
 
@@ -58,8 +59,10 @@ class Appa_Performance:
             for line in lines:
                 if line.__contains__("TOTAL"):
                     memory_info = line.split()[1]
+                    print("内存值"+str(memory_info))
                     return int(int(memory_info) / 1024)
             return None
+
 
     def make_mem_canvas(self, btn, layout, package_name):
         if btn.text() == "获取内存数据":
@@ -85,7 +88,7 @@ class Appa_Performance:
             self.canvas = FigureCanvas(self.figure)
             layout.addWidget(self.canvas)
             self.package_name = package_name
-            self.pid=self.get_PID(package_name)
+            self.pid = self.get_PID(package_name)
             self.timer = self.canvas.new_timer(interval=1000)  # 每秒更新一次
             self.timer.add_callback(self.update_plot_cpu)
             self.timer.start()
@@ -119,7 +122,7 @@ class Appa_Performance:
             cpu_X = cpu_X[-5:]
             cpu_Y = cpu_Y[-5:]
         ax.set_xlabel('Time')
-        ax.set_ylabel('Cpu')
+        ax.set_ylabel('CPU')
         ax.plot(cpu_X, cpu_Y)
         self.canvas.draw()
 
