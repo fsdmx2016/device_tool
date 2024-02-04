@@ -22,7 +22,7 @@ class MyApp(QtWidgets.QDialog):
         ui_file_path = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())), "ui", "android.ui")
         uic.loadUi(ui_file_path, self)
         # 对设备的判断，如果没有设备时，进行提示
-        show_conntct_messageBox_num = 0
+        show_connect_messageBox_num = 0
         while True:
             is_connect = self.is_connect_device()
             if is_connect:
@@ -58,11 +58,11 @@ class MyApp(QtWidgets.QDialog):
                 break
             else:
                 # 弹窗只展示一次
-                if show_conntct_messageBox_num != 1:
-                    show_conntct_messageBox = QMessageBox(QMessageBox.Information, "提示", "请先连接安卓手机！")
-                    show_conntct_messageBox.button(QMessageBox.Ok)
-                    show_conntct_messageBox.exec()
-                    show_conntct_messageBox_num = show_conntct_messageBox_num + 1
+                if show_connect_messageBox_num != 1:
+                    show_connect_messageBox = QMessageBox(QMessageBox.Information, "提示", "请先连接安卓手机！")
+                    show_connect_messageBox.button(QMessageBox.Ok)
+                    show_connect_messageBox.exec()
+                    show_connect_messageBox_num = show_connect_messageBox_num + 1
                     continue
             time.sleep(2)
 
