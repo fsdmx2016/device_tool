@@ -32,8 +32,3 @@ def get_fps_data(package_name):
     except subprocess.CalledProcessError as e:
         print("An error occurred while fetching FPS data: ", e)
         return None
-
-
-# Replace 'your.app.package' with the actual package name of the Android app
-package_name = 'com.mt.mtxx.mtxx'
-get_fps_data(package_name)

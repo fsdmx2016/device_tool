@@ -228,6 +228,7 @@ class MyApp(QtWidgets.QDialog):
                 return
             pos = (pos - pixmapRect.topLeft()).toPoint()
         x_, y_ = self.get_screen_resolution()
+        # 根据屏幕尺寸,做一个坐标换算
         x_val = str(pos.x() * x_ / pixmapRect.width())
         y_val = str(pos.y() * y_ / pixmapRect.height())
         global is_save_step
