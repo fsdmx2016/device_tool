@@ -65,7 +65,7 @@ class Appa_Performance:
 
 
     def make_mem_canvas(self, btn, layout, package_name):
-        if btn.text() == "获取内存数据":
+        if btn.text() == "内存测试":
             self.deleteAll(layout)
             btn.setText("停止测试")
             self.deleteAll(layout)
@@ -78,10 +78,10 @@ class Appa_Performance:
             self.timer.start()
         else:
             self.timer.stop()
-            btn.setText("获取内存数据")
+            btn.setText("内存测试")
 
     def make_cpu_canvas(self, btn, layout, package_name):
-        if btn.text() == "获取CPU数据":
+        if btn.text() == "CPU测试":
             self.deleteAll(layout)
             btn.setText("停止测试")
             self.figure = Figure()
@@ -94,7 +94,7 @@ class Appa_Performance:
             self.timer.start()
         else:
             self.timer.stop()
-            btn.setText("获取CPU数据")
+            btn.setText("CPU测试")
 
     def deleteAll(self, thisLayout):
         item_list = list(range(thisLayout.count()))
