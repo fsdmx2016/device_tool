@@ -37,18 +37,13 @@ class LogThread(QThread):
     # 获取应用的日志信息
     def get_app_memory(self):
         package_name = str(self.dev.get_top_activity_name()).split("/")[0]
-        if LogThread.get_sys_info(self) == "windows":
-            command ="adb logcat"
-        else:
-            command = f"adb logcat -e {package_name}"
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        process=self.dev.shell("logcat")
-        # process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        while True:
-            output = process.stdout.readline().decode('utf-8').strip()
-            if output == '' and process.poll() is not None:
-                break
-            return output
+        # 循环获取最新1s的日志
+        run_shell="adb logcat -v time -T $(date +%s) -d | grep -F '$(date --date='1 second ago' +%s)' | grep "+package_name+" "
+        output = run_adb_command(run_shell)
+        if output:
+            lines = output.splitlines()
+            return lines
+
 
     def update_text_edit(self, data):
         self.log_label.append(str(data))
