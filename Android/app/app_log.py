@@ -38,7 +38,9 @@ class LogThread(QThread):
     def get_app_memory(self):
         package_name = str(self.dev.get_top_activity_name()).split("/")[0]
         # 循环获取最新1s的日志
-        run_shell="adb logcat -v time -T $(date +%s) -d | grep -F '$(date --date='1 second ago' +%s)' | grep "+package_name+" "
+
+        run_shell = "adb logcat -v time -T $(date +%s) -d | grep -F \"$(date --date='1 second ago' +%s)\" | grep \""+package_name+"\""
+
         output = run_adb_command(run_shell)
         if output:
             lines = output.splitlines()
