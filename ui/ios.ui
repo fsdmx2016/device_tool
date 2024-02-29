@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>4</number>
    </property>
    <widget class="QWidget" name="tab_6">
     <attribute name="title">
@@ -457,6 +457,16 @@
      </property>
      <property name="text">
       <string/>
+     </property>
+    </widget>
+    <widget class="QTableWidget" name="app_table_list">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>110</y>
+       <width>911</width>
+       <height>731</height>
+      </rect>
      </property>
     </widget>
    </widget>

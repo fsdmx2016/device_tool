@@ -7,20 +7,20 @@
 @Desc    :
 """
 import os
-import time
+import subprocess
 
-from PyQt5 import QtWidgets, uic, QtCore
+from PyQt5.QtCore import QProcess, pyqtSignal
+from PyQt5.QtGui import QTextCursor
+from PyQt5 import QtWidgets, uic
 import sys
-from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtWidgets import QApplication, QFileDialog, QCheckBox, QListWidgetItem, QMessageBox, QHeaderView
-from PyQt5.QtGui import QPixmap, QImage, QStandardItemModel
+from PyQt5.QtWidgets import QApplication
 
-from iOS.app.app_log import LogThread
+from iOS.app.base import raw_shell
 from iOS.app.crash_log import App_Crash_Log
 
 is_save_step = False
 is_start_record = False
-
+from iOS.app import app_manager
 
 class MyApp(QtWidgets.QDialog):
     def __init__(self):
@@ -30,8 +30,11 @@ class MyApp(QtWidgets.QDialog):
         uic.loadUi(ui_file_path, self)
         # 加载crash_log文件
         self.init_crash_logs()
+        # 日志文件相关
         self.init_logs()
-
+        # app列表
+        self.device_app_list.addItems(self.raw_shell('tidevice applist'))
+        app_manager.get_app_list(self.app_table_list)
 
     def init_crash_logs(self):
         self.crash_tab_list.setHorizontalHeaderLabels(['Column 1', 'Column 2', 'Column 3'])  # 设置水平表头标签
@@ -39,19 +42,52 @@ class MyApp(QtWidgets.QDialog):
         crash_log.get_crash_log_list(self.crash_tab_list)
 
     def init_logs(self):
-        # 加载对应功能
-        self.start_get_Log.clicked.connect(self.start_thread)
-        self.worker_thread = LogThread( self.show_log)
-        self.worker_thread.update_signal.connect(self.update_line_edit)
+        self.start_get_Log.clicked.connect(lambda: self.get_current_log())
+        self.stop_get_Log.clicked.connect(lambda: self.process.terminate())
+        self.clear_log.clicked.connect(lambda: self.show_log.setText(''))
 
-    def start_thread(self):
-        self.worker_thread.start()
+    # 日志文件相关
+    def get_current_log(self):
+        self.process = OutputReader()
+        self.process.outputReady.connect(self.update_output)
+        # 启动命令
+        self.process.start('tidevice', ['syslog'])
 
-    def update_line_edit(self, text):
-        self.show_log.append(str(text))
-        # 滚动到底部
-        scrollbar = self.show_log.verticalScrollBar()
-        scrollbar.setValue(scrollbar.maximum())
+    def update_output(self, text):
+        # 将新的输出内容追加到文本编辑器中
+        cursor = self.show_log.textCursor()
+        cursor.movePosition(QTextCursor.End)
+        cursor.insertText(text)
+        self.show_log.setTextCursor(cursor)
+        self.show_log.ensureCursorVisible()
+
+    # 日志文件相关结束
+
+    # app列表相关开始
+    def raw_shell(self, command: str):
+        result = subprocess.run(command, shell=True, capture_output=True, text=True)
+        stdout = result.stdout
+        return stdout.split("\n")
+
+    # app列表相关结束
+
+
+class OutputReader(QProcess):
+    outputReady = pyqtSignal(str)
+
+    def __init__(self, parent=None):
+        super(OutputReader, self).__init__(parent)
+        self.readyReadStandardOutput.connect(self.handle_stdout)
+        self.readyReadStandardError.connect(self.handle_stderr)
+
+    def handle_stdout(self):
+        data = self.readAllStandardOutput().data().decode()
+        self.outputReady.emit(data)
+
+    def handle_stderr(self):
+        data = self.readAllStandardError().data().decode()
+        self.outputReady.emit(data)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

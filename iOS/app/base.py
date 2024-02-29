@@ -8,13 +8,7 @@
 """
 import subprocess
 
-from Base import common
 
-
-class Base_Device(object):
-    def get_device_info(self):
-        rsp = common.raw_shell("tidevice info")
-        return rsp
 
 def raw_shell(command: str):
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
