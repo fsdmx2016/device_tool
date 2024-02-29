@@ -9,8 +9,11 @@ from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, QLabel, QHBoxLayo
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 
-from Base.common import get_sys_info
-
+def get_sys_info():
+    if sys.platform.startswith('win'):
+        return "windows"
+    else:
+        return "linux"
 
 class Video_Cut():
     def video_cut(self, video_file):

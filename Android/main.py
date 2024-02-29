@@ -1,4 +1,3 @@
-import datetime
 import os
 import time
 
@@ -10,7 +9,6 @@ from PyQt5.QtGui import QPixmap, QImage
 from airtest.core.android import Android
 from Android.app import app_start, video_cut, base, app_performance, app_info, app_network, app_retry
 from Android.app.app_log import LogThread
-
 is_save_step = False
 is_start_record = False
 
@@ -21,6 +19,12 @@ class MyApp(QtWidgets.QDialog):
         # 加载UI文件
         ui_file_path = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())), "ui", "android.ui")
         uic.loadUi(ui_file_path, self)
+
+        # 加载UI文件-代码方式
+        # super(MyApp, self).__init__()
+        # self.setupUi(self)
+        # self.retranslateUi(self)
+
         # 对设备的判断，如果没有设备时，进行提示
         show_connect_messageBox_num = 0
         while True:

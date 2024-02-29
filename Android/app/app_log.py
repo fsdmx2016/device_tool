@@ -1,16 +1,7 @@
-import os
-import subprocess
 import sys
-import time
 
-from PyQt5.QtCore import QThread
-
-from Base import common
+from Android.app.common import run_adb_command
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
-
-from Base.common import run_adb_command
-from PyQt5.QtGui import QTextCursor
-
 
 class LogThread(QThread):
     update_signal = pyqtSignal(str)
@@ -51,20 +42,20 @@ class LogThread(QThread):
         self.log_label.append(str(data))
         scrollbar = self.log_label.verticalScrollBar()
         scrollbar.setValue(scrollbar.maximum())
-
-
-class AppLogMethod():
-
-    def __init__(self, dev, log_label):
-        self.dev = dev
-        self.log_label = log_label
-
-    # 获取当前的top activity
-    def get_log_cat(self, level: str, grep: str, ):
-        self.dev.logcat(grep, "*:" + level)
-
-    # 获取指定包名的app_cache日志文件
-    def get_app_cache_log(self, package_name: str):
-        file_name = str(time.time()).split(".")[0]
-        export_log_file_path = os.path.dirname(os.getcwd()) + "\\file" + "\\app_log\\" + file_name + ".txt"
-        common.raw_shell("adb logcat -b cache -s " + package_name + " > log.txt")
+#
+#
+# class AppLogMethod():
+#
+#     def __init__(self, dev, log_label):
+#         self.dev = dev
+#         self.log_label = log_label
+#
+#     # 获取当前的top activity
+#     def get_log_cat(self, level: str, grep: str, ):
+#         self.dev.logcat(grep, "*:" + level)
+#
+#     # 获取指定包名的app_cache日志文件
+#     def get_app_cache_log(self, package_name: str):
+#         file_name = str(time.time()).split(".")[0]
+#         export_log_file_path = os.path.dirname(os.getcwd()) + "\\file" + "\\app_log\\" + file_name + ".txt"
+#         common.raw_shell("adb logcat -b cache -s " + package_name + " > log.txt")

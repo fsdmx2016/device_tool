@@ -94,7 +94,8 @@ class AppRetry:
                         self.dev.shell("input tap " + line.split(" ")[0] + " " + line.split(" ")[1] + "")
 
     # 判断脚本名称是否存在
-    def is_has_save(self, script_name, layout):
+
+    def is_script_exist(self, script_name, layout):
         for i in range(layout.count()):
             item = layout.item(i)
             check_box = layout.itemWidget(item)
@@ -112,7 +113,7 @@ class AppRetry:
         :param layout:
         :return:
         """
-        is_has_save = self.is_has_save(script_name, layout)
+        is_has_save = self.is_script_exist(script_name, layout)
         if is_has_save:
             temporary_path = os.path.join(os.getcwd(), "script_file", "temporary")
             circulate_path = os.path.join(os.getcwd(), "script_file", "circulate")
