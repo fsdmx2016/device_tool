@@ -20,7 +20,6 @@ from iOS.app.crash_log import App_Crash_Log
 
 is_save_step = False
 is_start_record = False
-from iOS.app import app_manager
 
 class MyApp(QtWidgets.QDialog):
     def __init__(self):
@@ -28,13 +27,16 @@ class MyApp(QtWidgets.QDialog):
         # 加载UI文件
         ui_file_path = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())), "ui", "ios.ui")
         uic.loadUi(ui_file_path, self)
+        # 判断设备是否连接，且为usb
+
+
         # 加载crash_log文件
         self.init_crash_logs()
         # 日志文件相关
         self.init_logs()
-        # app列表
+        # 默认-app列表
         self.device_app_list.addItems(self.raw_shell('tidevice applist'))
-        app_manager.get_app_list(self.app_table_list)
+
 
     def init_crash_logs(self):
         self.crash_tab_list.setHorizontalHeaderLabels(['Column 1', 'Column 2', 'Column 3'])  # 设置水平表头标签
@@ -46,7 +48,14 @@ class MyApp(QtWidgets.QDialog):
         self.stop_get_Log.clicked.connect(lambda: self.process.terminate())
         self.clear_log.clicked.connect(lambda: self.show_log.setText(''))
 
-    # 日志文件相关
+
+    # app管理开始
+    def init_app_manager(self):
+        from iOS.app import app_manager
+        app_manager.get_app_list(self.app_table_list)
+
+
+    # 日志文件相关开始
     def get_current_log(self):
         self.process = OutputReader()
         self.process.outputReady.connect(self.update_output)
