@@ -6,6 +6,8 @@
 @Date    :  2023/11/10 18:41
 @Desc    :
 """
+import subprocess
+
 from Base import common
 
 
@@ -14,6 +16,7 @@ class Base_Device(object):
         rsp = common.raw_shell("tidevice info")
         return rsp
 
-if __name__ == '__main__':
-    base_d=Base_Device()
-    print(base_d.get_device_info())
+def raw_shell(command: str):
+    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+    stdout = result.stdout
+    return stdout
