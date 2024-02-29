@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QTableWidgetItem, QPushButton, QWidget, QVBoxLayout
 
 from Base import common
 
+
 # 获取应用
 def get_app_list(table):
     rsp = common.raw_shell("tidevice applist").split("\n")[:-1]
@@ -25,13 +26,14 @@ def get_app_list(table):
     table.setHorizontalHeaderLabels(header_labels)
 
     table.setColumnCount(len(header_labels) + 1)  # 设置列数，这里需要多加一列，因为有卸载按钮展示
-    table.setRowCount(len(app_list)) #设置行数
+    table.setRowCount(len(app_list))  # 设置行数
 
     for row, app_info in enumerate(app_list):
         for col, label in enumerate(header_labels):
             table.setItem(row, col, QTableWidgetItem(app_info[label]))
-    add_table_button(table) #每一行的最后一列,添加按钮
+    add_table_button(table)  # 每一行的最后一列,添加按钮
     table.show()
+
 
 def add_table_button(table):
     for row in range(table.rowCount()):
