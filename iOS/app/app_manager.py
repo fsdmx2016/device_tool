@@ -6,7 +6,7 @@
 @Date    :  2023/11/10 13:08
 @Desc    :
 """
-from PyQt5.QtWidgets import QTableWidgetItem, QPushButton, QWidget, QVBoxLayout
+from PyQt5.QtWidgets import QTableWidgetItem, QPushButton, QWidget, QVBoxLayout, QMessageBox
 
 from Base import common
 
@@ -39,7 +39,7 @@ def add_table_button(table):
     for row in range(table.rowCount()):
         button = QPushButton("卸载")
         # 按钮点击事件
-        button.clicked.connect(lambda checked, row=row: on_button_click(row))  # 使用lambda绑定行号
+        button.clicked.connect(lambda checked, row=row: on_button_click(row,table))  # 使用lambda绑定行号
         layout = QVBoxLayout()
         layout.addWidget(button)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -52,8 +52,8 @@ def add_table_button(table):
         table.setCellWidget(row, last_column, container_widget)
 
 
-def on_button_click(row):
-    un_install_app(row)
+def on_button_click(row,table):
+    un_install_app(row,table)
 
 
 # app安装
@@ -61,15 +61,26 @@ def install_app(file_path):
     shell_ = "tidevice install " + file_path
     rsp = common.raw_shell(shell_)
     if rsp.__contains__("Complete"):
-        return "success"
+        messageBox = QMessageBox(QMessageBox.Information, "提示", "安装成功")
+        messageBox.button(QMessageBox.Ok)
+        messageBox.exec()
     else:
-        return "安装失败！"
+        messageBox = QMessageBox(QMessageBox.Information, "提示", "安装失败")
+        messageBox.button(QMessageBox.Ok)
+        messageBox.exec()
+
 
 
 # app卸载
-def un_install_app(app_package_name):
+def un_install_app(app_package_name,table):
     rsp = common.raw_shell("tidevice uninstall " + app_package_name)
     if rsp.__contains__("Complete"):
-        return "success"
+        messageBox = QMessageBox(QMessageBox.Information, "提示", "卸载成功")
+        messageBox.button(QMessageBox.Ok)
+        messageBox.exec()
+        # 重新加载一下列表
+        get_app_list(table)
     else:
-        return "卸载失败！"
+        messageBox = QMessageBox(QMessageBox.Information, "提示", "卸载失败")
+        messageBox.button(QMessageBox.Ok)
+        messageBox.exec()
