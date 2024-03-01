@@ -24,10 +24,8 @@ def get_app_list(table):
     # 设置表头
     header_labels = ["包名", "名称", "版本号"]
     table.setHorizontalHeaderLabels(header_labels)
-
     table.setColumnCount(len(header_labels) + 1)  # 设置列数，这里需要多加一列，因为有卸载按钮展示
     table.setRowCount(len(app_list))  # 设置行数
-
     for row, app_info in enumerate(app_list):
         for col, label in enumerate(header_labels):
             table.setItem(row, col, QTableWidgetItem(app_info[label]))

@@ -17,7 +17,7 @@ class MyApp(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
         # 加载UI文件
-        ui_file_path = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())), "ui", "android.ui")
+        ui_file_path = os.path.join( "android.ui")
         uic.loadUi(ui_file_path, self)
 
         # 加载UI文件-代码方式
