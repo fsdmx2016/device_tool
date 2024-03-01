@@ -6,7 +6,7 @@
 @Date    :  2023/11/10 13:08
 @Desc    :
 """
-from PyQt5.QtWidgets import QTableWidgetItem, QPushButton, QWidget, QVBoxLayout, QMessageBox
+from PyQt5.QtWidgets import QTableWidgetItem, QPushButton, QWidget, QVBoxLayout, QMessageBox, QTableWidget
 
 from Base import common
 
@@ -21,15 +21,19 @@ def get_app_list(table):
         app_info["名称"] = i.split(" ")[1]
         app_info["版本号"] = i.split(" ")[2]
         app_list.append(app_info)
+    from iOS.app.base import operate_table
+    operate_table(table,app_list,["包名", "名称", "版本号"])
+    table.setEditTriggers(QTableWidget.NoEditTriggers)
     # 设置表头
-    header_labels = ["包名", "名称", "版本号"]
-    table.setHorizontalHeaderLabels(header_labels)
-    table.setColumnCount(len(header_labels) + 1)  # 设置列数，这里需要多加一列，因为有卸载按钮展示
-    table.setRowCount(len(app_list))  # 设置行数
-    for row, app_info in enumerate(app_list):
-        for col, label in enumerate(header_labels):
-            table.setItem(row, col, QTableWidgetItem(app_info[label]))
+    # header_labels = ["包名", "名称", "版本号"]
+    # table.setHorizontalHeaderLabels(header_labels)
+    # table.setColumnCount(len(header_labels) + 1)  # 设置列数，这里需要多加一列，因为有卸载按钮展示
+    # table.setRowCount(len(app_list))  # 设置行数
+    # for row, app_info in enumerate(app_list):
+    #     for col, label in enumerate(header_labels):
+    #         table.setItem(row, col, QTableWidgetItem(app_info[label]))
     add_table_button(table)  # 每一行的最后一列,添加按钮
+
     table.show()
 
 
@@ -51,7 +55,9 @@ def add_table_button(table):
 
 
 def on_button_click(row,table):
-    un_install_app(row,table)
+    print(row)
+    # un_install_app(row,table)
+
 
 
 # app安装
