@@ -129,9 +129,10 @@ class MyApp(QtWidgets.QDialog):
 
     # app列表相关开始
     def raw_shell(self, command: str):
+        import  re
         result = subprocess.run(command, shell=True, capture_output=True, text=True)
         stdout = result.stdout
-        return stdout.split("\n")
+        return re.split(r"[\n\r]+", stdout)
     # app列表相关结束
 
     # 投屏相关开始

@@ -216,22 +216,29 @@ class Appa_Performance:
         self.canvas.draw()
 
     def init_ui(self):
+        # self.axes = self.figure.add_subplot(111)
+        # self.plot_line, = self.axes.plot([], [])  # 初始化为空
+
         self.axes = self.figure.add_subplot(111)
+        self.x_data = []  # 移至类属性，在此处初始化
+        self.y_data = []
         self.plot_line, = self.axes.plot([], [])  # 初始化为空
 
     def update_ui(self,new_y_value):
         # self.figure.clear()
-        current_time = datetime.datetime.now
-        self.x_data.append(current_time)
+        current_time = datetime.datetime.now()
+        self.x_data.append(current_time)  # 使用实例变量 x_data 和 y_data
         self.y_data.append(new_y_value)
-        print(new_y_value)
+
         if len(self.x_data) > 5:
             self.x_data = self.x_data[-5:]
             self.y_data = self.y_data[-5:]
+
         self.axes.set_xlabel('Time')
         self.axes.set_ylabel('Memory')
-        self.axes.plot(mem_X, mem_Y)
-        # self.canvas.draw()
+        self.plot_line.set_xdata(self.x_data)
+        self.plot_line.set_ydata(self.y_data)  # 更新已有折线图的数据，而不是重新绘制
+
         self.axes.relim()  # 更新数据范围
         self.axes.autoscale_view(True, True, True)
         self.canvas.draw_idle()  # 刷新canvas
