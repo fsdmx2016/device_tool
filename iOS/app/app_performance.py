@@ -23,38 +23,37 @@ mem_X = []
 mem_Y = []
 cpu_X = []
 cpu_Y = []
-
+path=os.path.join(os.path.abspath(os.path.dirname(os.getcwd())),'performance', "mem.txt")
 
 # 多线程-获取性能数据
-def collect_and_store_data(perf, app_bundle_id, output_file):
+def collect_and_store_data(perf, app_bundle_id):
     def callback(_type: tidevice.DataType, value: dict):
         if _type.value == "memory":
             ss = str(value)
             memory = ss.split("'value':")[1][0:6].split("}")[0]
-            with open(output_file, "a+") as f:
+            with open(path, "a+") as f:
                 f.writelines(memory)
-
+            f.close()
     perf.start(app_bundle_id, callback=callback)
 
 
-def process_collected_data(input_file):
-    with open(input_file, "r") as f:
+def process_collected_data():
+    file_path=os.path.join(os.getcwd(),'performance', "mem.txt")
+    with open(file_path, "r") as f:
         data_list = list(str(f.readlines()).split(" "))
         final_list = [x for x in data_list if
                       x.__contains__(".") and len(x.split(".")) == 2 and not x.__contains__("]")]
     return final_list
 
 
-def run_performance():
-    uuid = "00008030-0006250A362B802E"
-    app_bundle_id = "com.meitu.mtxx"
+def run_performance(uuid,app_bundle_id):
+    file_path=os.path.join(os.getcwd(),'performance', "mem.txt")
     t = tidevice.Device(uuid)
     perf = tidevice.Performance(t, perfs=list(tidevice.DataType))
-    path = "/Users/sunpeng/Documents/review/device_tool/iOS/performance/mem.txt"
-    with open(path, "w") as f:
+    with open(file_path, "w") as f:
         f.write("")
     collector_thread = threading.Thread(target=collect_and_store_data, args=(
-        perf, app_bundle_id, "/Users/sunpeng/Documents/review/device_tool/iOS/performance/mem.txt"))
+        perf, app_bundle_id, file_path))
     collector_thread.start()
     # # 在开启收集线程后，立即开始处理数据的线程
     time.sleep(5)
@@ -65,13 +64,16 @@ def run_performance():
 
 class DataProducer(QThread):
     new_data_signal = pyqtSignal(float)  # 定义一个信号用于传递单个Y轴新值
-
+    def __init__(self, uuid, app_bundle_id):
+        super().__init__()
+        self.uuid = uuid
+        self.app_bundle_id = app_bundle_id
     def run(self):
         while True:
             # 模拟来自某个持续打印数据的方法
-            run_performance()
-            path = "/Users/sunpeng/Documents/review/device_tool/iOS/performance/mem.txt"
-            new_value = process_collected_data(path)
+
+            run_performance(self.uuid,self.app_bundle_id)
+            new_value = process_collected_data()
             self.new_data_signal.emit(float(new_value[-1]))
             # 添加适当的延时，比如每秒更新一次
             QtCore.QThread.msleep(1000)
@@ -115,7 +117,7 @@ class Appa_Performance:
                     return appCPU
         return None
 
-    def make_mem_canvas(self, btn, layout):
+    def make_mem_canvas(self, btn, layout,uuid,app_bundle_id):
         if btn.text() == "内存测试":
 
             self.deleteAll(layout)
@@ -140,7 +142,7 @@ class Appa_Performance:
             self.canvas = FigureCanvas(self.figure)
             layout.addWidget(self.canvas)
             self.init_ui()
-            self.data_thread = DataProducer()
+            self.data_thread = DataProducer(uuid,app_bundle_id)
             self.data_thread.new_data_signal.connect(self.update_ui)
             self.data_thread.start()
 

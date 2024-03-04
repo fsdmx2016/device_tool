@@ -21,11 +21,13 @@ from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication
 
 from iOS.app import app_retry, app_performance
+from iOS.app.base import raw_shell
 from iOS.app.crash_log import App_Crash_Log
 from airtest.core.ios import IOS
 
 is_save_step = False
 is_start_record = False
+device_uuid = ''
 
 
 class MyApp(QtWidgets.QDialog):
@@ -36,7 +38,7 @@ class MyApp(QtWidgets.QDialog):
         uic.loadUi(ui_file_path, self)
         # 判断设备是否连接，且为usb
         self.dev = IOS()
-
+        self.get_uuid()
         # iOS投屏服务
         time.sleep(3)
         self.phone_show.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
@@ -63,11 +65,13 @@ class MyApp(QtWidgets.QDialog):
         # 性能测试相关
         self.init_performance()
 
+
     def init_performance(self):
+        global device_uuid
         app_ = app_performance.Appa_Performance(self.dev, self.cpu_layout, self.mem_layout)
         self.performance_start_mem_test.clicked.connect(
             lambda: app_.make_mem_canvas(self.performance_start_mem_test, self.mem_layout,
-                                         ))
+                                         device_uuid, self.device_app_list.currentText() ))
         self.performance_start_cpu_test.clicked.connect(
             lambda: app_.make_cpu_canvas(self.performance_start_cpu_test, self.cpu_layout,
                                          self.device_app_list.currentText()))
@@ -125,14 +129,16 @@ class MyApp(QtWidgets.QDialog):
         cursor.insertText(text)
         self.show_log.setTextCursor(cursor)
         self.show_log.ensureCursorVisible()
+
     # 日志文件相关结束
 
     # app列表相关开始
     def raw_shell(self, command: str):
-        import  re
+        import re
         result = subprocess.run(command, shell=True, capture_output=True, text=True)
         stdout = result.stdout
         return re.split(r"[\n\r]+", stdout)
+
     # app列表相关结束
 
     # 投屏相关开始
@@ -217,6 +223,17 @@ class MyApp(QtWidgets.QDialog):
         else:
             is_save_step = False
             btn.setText("录制循环脚本")
+
+    # 获取uuid
+    def get_uuid(self):
+        global device_uuid
+        import json
+        rsp = raw_shell('tidevice list --json')
+        # result = self.dev.shell('tidevice list')
+        for i in json.loads(rsp):
+            if i['conn_type'] == 'usb':
+                device_uuid = i['udid']
+                # return i[0]
 
 
 class OutputReader(QProcess):
